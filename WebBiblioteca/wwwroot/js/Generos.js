@@ -27,6 +27,38 @@ function actualizarEstadoId(id, genero, nuevoEstado) {
 }
 
 
+//Metodo para eliminar un Genero para siempre
+function eliminarGeneroId(id) {
+    idParseada = parseInt(id)
+    Swal.fire({
+        title: "¿Estás seguro que deseas eliminar este Género?",
+        html: "Si lo haces no podrás recuperar la información.",
+        showDenyButton: true,
+        confirmButtonText: "SI",
+        denyButtonText: "CANCELAR"
+    }).then((result) => {
+        if (result.isConfirmed) {
+            $.ajax({
+                type: "DELETE",
+                url: `https://localhost:7003/api/Generos/${idParseada}`,
+                success: function (response) {
+                    Swal.fire("Eliminado", "El género ha sido eliminado.", "success");
+                    cargarGenerosTabla();
+                    cargarGenerosNavbar();
+                },
+                error: function (xhr, status, error) {
+                    console.log("ERROR:", error, xhr.status, xhr.responseText);
+                    Swal.fire("Error", "No se pudo eliminar el género. Lo mas probable tengas un genero asociado a otra entidad", "error");
+                }
+            });
+        } else if (result.isDenied) {
+            Swal.fire("Cancelado", "No se eliminó el género.", "info");
+        }
+    });
+}
+
+
+
 
 
 
@@ -58,6 +90,11 @@ function cargarGenerosTabla() {
                                 </button>` }
                                 <button  data-bs-toggle="modal" data-bs-target="#exampleModal1" onclick="editarGenero(${genero.id_Genero}, '${genero.nombre}', ${genero.id_Estado})" class="btn btn-primary rounded px-2 py-1">
                                   Editar
+                                </button >
+                        </td>
+                        <td>
+                                <button onclick="eliminarGeneroId(${genero.id_Genero})" class="btn btn-danger rounded px-2 py-1">
+                                    <i class="fa-solid fa-trash"></i> Eliminar
                                 </button >
                         </td>
                     </tr>
