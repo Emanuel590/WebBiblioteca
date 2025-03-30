@@ -1,0 +1,11 @@
+﻿.no-focus-style:focus,
+.no-focus-style:active,
+.no-focus-style:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+    border: none !important; 
+}
+
+.item-dropdown {
+    flex: 0 0 25%;
+}

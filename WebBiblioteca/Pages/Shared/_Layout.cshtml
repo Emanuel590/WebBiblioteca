@@ -1,6 +1,11 @@
-﻿<!DOCTYPE html>
+﻿@using WebBiblioteca.Models
+
+
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - WebBiblioteca</title>
@@ -26,12 +31,12 @@
                             <a class="nav-link active fs-5" href="/LibrosAdmin">Libros</a>
                         </li>
                         <li class="nav-item dropdown px-3">
-                            <a class="nav-link active fs-5" href="#" role="button">
+
+                            <a class="nav-link active fs-5" href="/GenerosAdmin" role="button">
                                 Generos
                             </a>
-                            <ul class="dropdown-menu">
-                                <li><a class="dropdown-item" href="#">Accion</a></li>
-                                <li><a class="dropdown-item" href="#">Ciencia Ficcion</a></li>
+                            <ul class="dropdown-menu"  id="ulGeneros">
+
                             </ul>
                         </li>
                         <li class="nav-item px-3">
@@ -65,8 +70,8 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    <script src="https://kit.fontawesome.com/tu_codigo_de_kit.js" crossorigin="anonymous"></script>
+    <script src="~/js/Generos.js"></script>
+
 
 
 </body>
