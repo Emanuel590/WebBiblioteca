@@ -1,19 +1,17 @@
 ﻿@page
-@model WebBiblioteca.Pages.GenerosAdminModel
+@model WebBiblioteca.Pages.Pages_CategoriaAdmin
 @{
-    ViewData["Title"] = "Genero Admin";
+    ViewData["Title"] = "Admin Categoria";
 }
-
-
-<div class="container my-5">
+<div class="my-5">
     <div class="card">
-        <h1 class="card-header text-center text-white" style="background-color: #F2A172">Registro de Generos</h1>
+        <h1 class="card-header text-center text-white" style="background-color: #F2A172">Registro de Categorias</h1>
         <div class="card-body">
-            <table class="table" id="tablaGenero">
+            <table class="table" id="tablaCategoria">
                 <thead>
                     <tr class="text-center">
                         <th scope="col">#</th>
-                        <th scope="col">Genero</th>
+                        <th scope="col">Categoria</th>
                         <th scope="col">Estado</th>
                         <th scope="col">Acciones</th>
                         <th scope="col">Acciones Admin</th>
@@ -27,8 +25,8 @@
 </div>
 
 <div class="text-center">
-    <a type="button" class="btn rounded-0"  style="background-color: #F25835; border: none;" data-bs-toggle="modal" data-bs-target="#exampleModal">
-        <h6 class="text-white fw-bold"><i class="fa-solid fa-book-open px-1 "></i>Agregar Generos</h6>
+    <a type="button" class="btn rounded-0" style="background-color: #F25835; border: none;" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <h6 class="text-white fw-bold"><i class="fa-solid fa-book-open px-1 "></i>Agregar Categorias</h6>
     </a>
 </div>
 
@@ -40,7 +38,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <div class="text-center">
-                    <h1 class="modal-title fs-5 " id="exampleModalLabel">Agregar Generos</h1>
+                    <h1 class="modal-title fs-5 " id="exampleModalLabel">Agregar Categorias</h1>
 
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -48,8 +46,8 @@
             <div class="modal-body">
                 <form method="POST" id="BinarioONoBinario">
                     <div class="mb-3">
-                        <label for="genero"  class="form-label">Genero</label>
-                        <input type="text" class="form-control"  id="genero" placeholder="Ingrese el genero">
+                        <label for="categoria" class="form-label">categoria</label>
+                        <input type="text" class="form-control" id="categoria" placeholder="Ingrese el categoria">
                     </div>
 
                     <div class="text-center">
@@ -63,27 +61,25 @@
 </div>
 
 <!-- Button trigger modal -->
-
-
 <!-- Modal -->
 <div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Actualizar Genero</h1>
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Actualizar Categori</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <form method="POST" id="ActualizarForm">
                     <div class="mb-3">
-                        <input type="hidden" class="form-control" id="id_Editar" placeholder="Actualice el Genero">
+                        <input type="hidden" class="form-control" id="id_Editar" placeholder="Actualice la Categoria">
                     </div>
                     <div class="mb-3">
-                        <label for="genero" class="form-label">Genero</label>
-                        <input type="text" class="form-control" id="genero_Editar" placeholder="Actualice el Genero">
+                        <label for="categoria" class="form-label">Categorias</label>
+                        <input type="text" class="form-control" id="categoria_Editar" placeholder="Actualice el Categoria">
                     </div>
                     <div class="mb-3">
-                        <input type="hidden" class="form-control" id="estado_Editar" placeholder="Actualice el Genero">
+                        <input type="hidden" class="form-control" id="estado_Editar" placeholder="Actualice el Categoria">
                     </div>
 
                     <div class="text-center">
@@ -100,4 +96,3 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
