@@ -1,4 +1,5 @@
 ﻿@using WebBiblioteca.Models
+@using Microsoft.AspNetCore.Http
 
 
 
@@ -52,7 +53,18 @@
 
                     <div>
                        <i class="fa-solid fa-user text-white px-3 fs-5"></i>
-                        <a href="/Login" class="text-white px-2 fs-5 text-decoration-none">Login</a>
+                        <!-- Verifica si el token existe en la sesión para mostrar Login o Logout -->
+                        @if (Context.Session.GetString("AuthToken") != null)
+                        {
+                            <!-- para cerrar sesión -->
+                            <form method="post" asp-page="/Logout" asp-page-handler="OnPost" style="display:inline;">
+                                <button type="submit" class="btn btn-link text-white fs-5 text-decoration-none">Logout</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a href="/Login" class="text-white fs-5 px-3 text-decoration-none">Login</a>
+                        }
 
                     </div>
 
