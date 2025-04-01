@@ -1,0 +1,26 @@
+﻿@page
+@model WebBiblioteca.Pages.LoginModel1
+@{
+    ViewData["Title"] = "Iniciar Sesión";
+}
+
+<h2>Iniciar Sesión</h2>
+
+@if (!string.IsNullOrEmpty(Model.MensajeError))
+{
+    <div class="alert alert-danger">@Model.MensajeError</div>
+}
+
+<form method="post">
+    <div class="mb-3">
+        <label>Email</label>
+        <input type="email" asp-for="Input.Email" class="form-control" required />
+        <span asp-validation-for="Input.Email" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label>Contraseña</label>
+        <input type="password" asp-for="Input.Contra" class="form-control" required />
+        <span asp-validation-for="Input.Contra" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Ingresar</button>
+</form>

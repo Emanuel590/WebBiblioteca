@@ -1,3 +1,4 @@
+using WebBiblioteca.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -6,6 +7,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddHttpClient<ApiService>();
+
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Expira en 30 minutos
+    options.Cookie.HttpOnly = true;  
+    options.Cookie.IsEssential = true; 
+});
 
 var app = builder.Build();
 
@@ -18,10 +28,14 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseSession();
 
 app.UseAuthorization();
 app.MapControllers();
