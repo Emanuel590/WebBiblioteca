@@ -13,7 +13,7 @@ namespace WebBiblioteca.Pages
         public LoginModel1(ApiService apiService)
         {
             _apiService = apiService;
-            Input = new LoginInputModel(); // Inicializa para evitar null reference
+            Input = new LoginInputModel(); 
         }
 
         [BindProperty]
@@ -31,12 +31,12 @@ namespace WebBiblioteca.Pages
 
             if (token != null)
             {
-                HttpContext.Session.SetString("AuthToken", token);
-                return RedirectToPage("/Index"); // Redirige al home
+                HttpContext.Session.SetString("AuthToken", token); 
+                return RedirectToPage("/Index"); 
             }
 
-            MensajeError = "Credenciales incorrectas";
-            return Page();
+            MensajeError = "Credenciales incorrectas"; 
+            return Page(); 
         }
     }
 

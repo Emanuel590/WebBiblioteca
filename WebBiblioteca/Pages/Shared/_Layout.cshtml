@@ -1,4 +1,5 @@
 ﻿@using WebBiblioteca.Models
+@using Microsoft.AspNetCore.Http
 
 @{
     /*ROLE TEMPORAL PARA DIVIDIR EL NAVBAR*/
@@ -77,9 +78,24 @@
                             <a class="nav-link active fs-5" href="/CategoriaAdmin">Categorias</a>
                         </li>
                     </ul>
+
                     <div>
-                        <i class="fa-solid fa-user text-white px-5 fs-5"></i>
+                       <i class="fa-solid fa-user text-white px-3 fs-5"></i>
+                        <!-- Verifica si el token existe en la sesión para mostrar Login o Logout -->
+                        @if (Context.Session.GetString("AuthToken") != null)
+                        {
+                            <!-- para cerrar sesión -->
+                            <form method="post" asp-page="/Logout" asp-page-handler="OnPost" style="display:inline;">
+                                <button type="submit" class="btn btn-link text-white fs-5 text-decoration-none">Logout</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a href="/Login" class="text-white fs-5 px-3 text-decoration-none">Login</a>
+                        }
+
                     </div>
+
                 </div>
 
             </div>
