@@ -6,7 +6,6 @@
 @using Microsoft.AspNetCore.Http
 
 
-<!-- Inyectar el token en una variable global antes de cargar el JS -->
 <script>
     var authToken = '@HttpContext.Session.GetString("AuthToken")';
 </script>
