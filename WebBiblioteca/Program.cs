@@ -4,18 +4,28 @@ using WebBiblioteca.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.Configure<CookiePolicyOptions>(options =>
+{
+    options.MinimumSameSitePolicy = SameSiteMode.None;
+    options.Secure = CookieSecurePolicy.Always;
+});
+
 builder.Services.AddRazorPages().AddRazorRuntimeCompilation();
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddHttpClient<ApiService>();
 
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Expira en 30 minutos
-    options.Cookie.HttpOnly = true;  
-    options.Cookie.IsEssential = true; 
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
 });
+
+
 
 var app = builder.Build();
 

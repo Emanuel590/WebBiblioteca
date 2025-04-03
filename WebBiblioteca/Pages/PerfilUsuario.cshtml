@@ -1,0 +1,24 @@
+﻿@page
+@model WebBiblioteca.Pages.PerfilUsuarioModel
+@{
+	ViewData["Title"] = "Perfil de Usuario";
+}
+@using Microsoft.AspNetCore.Http
+
+
+<!-- Inyectar el token en una variable global antes de cargar el JS -->
+<script>
+    var authToken = '@HttpContext.Session.GetString("AuthToken")';
+</script>
+
+
+<div id="perfilUsuario" class="text-center">
+
+    <p class="text-muted">Cargando Perfil...</p>
+
+</div>
+
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/perfilUsuario.js"></script>
+ 
