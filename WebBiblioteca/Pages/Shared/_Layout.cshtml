@@ -1,5 +1,10 @@
 ﻿@using WebBiblioteca.Models
+@using Microsoft.AspNetCore.Http
 
+@{
+    /*ROLE TEMPORAL PARA DIVIDIR EL NAVBAR*/
+    var role = 1;
+}
 
 
 <!DOCTYPE html>
@@ -22,26 +27,50 @@
             <div class="container-fluid d-flex justify-content-between">
                 <a class="navbar-brand fs-1 mx-2" href="/Index">Biblioteca</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 mx-4">
-                        <li class="nav-item px-3">
-                            <a class="nav-link active fs-5" href="/LibrosAdmin">Libros</a>
-                        </li>
+                        @{
+                            if(role == 3 || role == 2){
+                                <li class="nav-item px-3">
+                                    <a class="nav-link active fs-5" href="/LibrosAdmin">Libros</a>
+                                </li>
+                            }else{
+                                <li class="nav-item px-3">
+                                    <a class="nav-link active fs-5" href="/Libros">Libros</a>
+                                </li>
+                            }
+                        }
+
                         <li class="nav-item dropdown px-3">
 
-                            <a class="nav-link active fs-5" href="/GenerosAdmin" role="button">
-                                Generos
-                            </a>
+                        @{
+                               if(role == 3 || role == 2){
+                                   <a class="nav-link active fs-5" href="/GenerosAdmin" role="button">
+                                       Generos
+                                   </a>
+                               }else{
+                                   <a class="nav-link active fs-5" href="" role="button">
+                                       Generos
+                                   </a>
+                               }
+                        }
+
+
                             <ul class="dropdown-menu"  id="ulGeneros">
 
                             </ul>
                         </li>
-                        <li class="nav-item px-3">
-                            <a class="nav-link active fs-5" href="/AutoresAdmin">Autores</a>
-                        </li>
+                        @{
+                            if (role == 3 || role == 2) {
+                                <li class="nav-item px-3">
+                                    <a class="nav-link active fs-5" href="/AutoresAdmin">Autores</a>
+                                </li>
+                            }
+                        }
+
                         <li class="nav-item px-3">
                             <a class="nav-link active fs-5" href="#">Productos</a>
                         </li>
@@ -49,9 +78,24 @@
                             <a class="nav-link active fs-5" href="/CategoriaAdmin">Categorias</a>
                         </li>
                     </ul>
+
                     <div>
-                        <i class="fa-solid fa-user text-white px-5 fs-5"></i>
+                       <i class="fa-solid fa-user text-white px-3 fs-5"></i>
+                        <!-- Verifica si el token existe en la sesión para mostrar Login o Logout -->
+                        @if (Context.Session.GetString("AuthToken") != null)
+                        {
+                            <!-- para cerrar sesión -->
+                            <form method="post" asp-page="/Logout" asp-page-handler="OnPost" style="display:inline;">
+                                <button type="submit" class="btn btn-link text-white fs-5 text-decoration-none">Logout</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a href="/Login" class="text-white fs-5 px-3 text-decoration-none">Login</a>
+                        }
+
                     </div>
+
                 </div>
 
             </div>

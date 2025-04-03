@@ -7,7 +7,7 @@ $(document).ready(function () {
 
 
 //Metodo para cambiar el Estado de Categoria
-function actualizarEstadoId(id, categoria, nuevoEstado) {
+function actualizarEstadoCategoriaId(id, categoria, nuevoEstado) {
     var datos = { id_Categoria: id, nombre: categoria, id_Estado: nuevoEstado };
     $.ajax({
         type: "PUT",
@@ -80,10 +80,10 @@ function cargarCategoriaTabla() {
                     }</td>
                         <td>
                             ${categoria.id_Estado == 1 ?
-                    `<button class="btn btn-danger rounded px-2 py-1" onclick="actualizarEstadoId(${categoria.id_Categoria}, '${categoria.nombre}', 2)">
+                    `<button class="btn btn-danger rounded px-2 py-1" onclick="actualizarEstadoCategoriaId(${categoria.id_Categoria}, '${categoria.nombre}', 2)">
                                     <i class="fa-solid fa-eye-slash"></i> Inactivar
                                 </button>` :
-                    `<button class="btn btn-success rounded px-2 py-1" onclick="actualizarEstadoId(${categoria.id_Categoria}, '${categoria.nombre}', 1)">
+                    `<button class="btn btn-success rounded px-2 py-1" onclick="actualizarEstadoCategoriaId(${categoria.id_Categoria}, '${categoria.nombre}', 1)">
                                     <i class="fa-solid fa-eye"></i> Activar
                                 </button>` }
                                 <button  data-bs-toggle="modal" data-bs-target="#exampleModal1" onclick="editarCategoria(${categoria.id_Categoria}, '${categoria.nombre}', ${categoria.id_Estado})" class="btn btn-primary rounded px-2 py-1">

@@ -4,11 +4,11 @@
     ViewData["Title"] = "Admin Libros";
 }
 
-<div class="my-5">
+<div class="container my-5">
     <div class="card">
         <h1 class="card-header text-center text-white" style="background-color: #F2A172">Registro de libros</h1>
         <div class="card-body">
-            <table class="table">
+            <table class="table" id="tablaLibros">
                 <thead>
                     <tr class="text-center">
                         <th scope="col">#</th>
@@ -18,7 +18,8 @@
                         <th scope="col">Autor</th>
                         <th scope="col">Genero</th>
                         <th scope="col">Estado</th>
-
+                        <th scope="col">Acciones</th>
+                        <th scope="col">Acciones Admin</th>
                     </tr>
                 </thead>
                 <tbody class="text-center">
@@ -29,3 +30,110 @@
         </div>
     </div>
 </div>
+
+<div class="text-center">
+    <a type="button" class="btn rounded-0" style="background-color: #F25835; border: none;" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <h6 class="text-white fw-bold"><i class="fa-solid fa-book px-1"></i>Agregar Libros</h6>
+    </a>
+</div>
+
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="text-center">
+                    <h1 class="modal-title fs-5 " id="exampleModalLabel">Agregar Libros</h1>
+
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" id="AutoresAgregar">
+                    <div class="mb-3">
+                        <label for="titulo" class="form-label">Titulo del libro</label>
+                        <input type="text" class="form-control" id="titulo" placeholder="Ingrese el titulo del libro">
+
+                    </div>
+                    <div class="mb-3">
+                        <label for="stock" class="form-label">Stock</label>
+                        <input type="number" class="form-control" id="stock" placeholder="Ingrese el stock del libro">
+                    </div>
+                    <div class="mb-3">
+                        <label for="precioAlquiler" class="form-label">Precio Alquiler</label>
+                        <input type="number" class="form-control" id="precioAlquiler" placeholder="Ingrese el alquiler libro">
+                    </div>
+                    <div class="mb-3">
+                        <label for="autores" class="form-label">Autor</label>
+                        <select class="form-select" id="autoresOption" aria-label="Default select example">
+                            
+
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="autores" class="form-label">Genero</label>
+                        <select class="form-select" id="GeneroOption" aria-label="Default select example">
+                        </select>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn border-0" style="background-color: #F25835; border: #ffff; outline: none !important; box-shadow: none !important;"><h5 class="text-white fw-bold"><i class="fa-solid fa-square-check  px-2"></i>Agregar</h5></button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="exampleModal3" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="text-center">
+                    <h1 class="modal-title fs-5 " id="exampleModalLabel">Actualizar Libros</h1>
+
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" id="LibrosActualizar">
+                    <input type="hidden" class="form-control" id="idEdit" placeholder="Ingrese el titulo del libro">
+                    <div class="mb-3">
+                        <label for="titulo" class="form-label">Titulo del libro</label>
+                        <input type="text" class="form-control" id="tituloEdit" placeholder="Ingrese el titulo del libro">
+
+                    </div>
+                    <div class="mb-3">
+                        <label for="stock" class="form-label">Stock</label>
+                        <input type="number" class="form-control" id="stockEdit" placeholder="Ingrese el stock del libro">
+                    </div>
+                    <div class="mb-3">
+                        <label for="precioAlquiler" class="form-label">Precio Alquiler</label>
+                        <input type="number" class="form-control" id="precioAlquilerEdit" placeholder="Ingrese el alquiler libro">
+                    </div>
+                    <div class="mb-3">
+                        <label for="autores" class="form-label">Autor</label>
+                        <select class="form-select" id="autoresOptionEdit" aria-label="Default select example">
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="autores" class="form-label">Genero</label>
+                        <select class="form-select" id="GeneroOptionEdit" aria-label="Default select example">
+                        </select>
+                    </div>
+
+                    <input type="hidden" class="form-control" id="estadoEdit" placeholder="Ingrese el titulo del libro">
+
+                    <div class="text-center">
+                        <button type="submit" class="btn border-0" style="background-color: #F25835; border: #ffff; outline: none !important; box-shadow: none !important;"><h5 class="text-white fw-bold"><i class="fa-solid fa-square-check  px-2"></i>Actualizar</h5></button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/js/Libros.js"></script>
+

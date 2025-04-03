@@ -5,4 +5,103 @@
 
 <div>
 
+    <div class="my-5">
+        <div class="card">
+            <h1 class="card-header text-center text-white" style="background-color: #F2A172">Registro de Autores</h1>
+            <div class="card-body">
+                <table class="table" id="tablaAutores">
+                    <thead>
+                        <tr class="text-center">
+                            <th scope="col">#</th>
+                            <th scope="col">Autores</th>
+                            <th scope="col">Apellido</th>
+                            <th scope="col">Estados</th>
+                            <th scope="col">Acciones</th>
+                            <th scope="col">Acciones Admin</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-center">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center">
+        <a type="button" class="btn rounded-0" style="background-color: #F25835; border: none;" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            <h6 class="text-white fw-bold"><i class="fa-solid fa-address-book px-1"></i>Agregar Autores</h6>
+        </a>
+    </div>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="text-center">
+                        <h1 class="modal-title fs-5 " id="exampleModalLabel">Agregar Autores</h1>
+
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" id="AutoresAgregar">
+                        <div class="mb-3">
+                            <label for="genero" class="form-label">Autor</label>
+                            <input type="text" class="form-control" id="nombre" placeholder="Ingrese el nombre">
+
+                        </div>
+                        <div class="mb-3">
+                            <label for="genero" class="form-label">Apellido</label>
+                            <input type="text" class="form-control" id="apellido" placeholder="Ingrese el apellido">
+                        </div>
+
+                        <div class="text-center">
+                            <button type="submit" class="btn border-0" style="background-color: #F25835; border: #ffff; outline: none !important; box-shadow: none !important;"><h5 class="text-white fw-bold"><i class="fa-solid fa-square-check  px-2"></i>Agregar</h5></button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
 </div>
+
+<div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="text-center">
+                    <h1 class="modal-title fs-5 " id="exampleModalLabel">Actualizar Autores</h1>
+
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" id="AutoresActualizar">
+                    <input type="hidden" class="form-control" id="id" placeholder="Ingrese el nombre">
+                    <div class="mb-3">
+                        <label for="genero" class="form-label">Autor</label>
+                        <input type="text" class="form-control" id="nombreEditar" placeholder="Ingrese el nombre">
+
+                    </div>
+                    <div class="mb-3">
+                        <label for="genero" class="form-label">Apellido</label>
+                        <input type="text" class="form-control" id="apellidoEditar" placeholder="Ingrese el apellido">
+                    </div>
+                    <input type="hidden" class="form-control" id="estadoEditar" placeholder="Ingrese el estado">
+                    <div class="text-center">
+                        <button type="submit" class="btn border-0" style="background-color: #F25835; border: #ffff; outline: none !important; box-shadow: none !important;"><h5 class="text-white fw-bold"><i class="fa-solid fa-square-check  px-2"></i>Actualizar</h5></button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/js/Autores.js"></script>
