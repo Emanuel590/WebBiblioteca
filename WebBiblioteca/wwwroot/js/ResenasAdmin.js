@@ -1,14 +1,12 @@
-﻿
-let libros = [];
+﻿let libros = [];
 let usuarios = [];
 
 $(document).ready(function () {
-    cargarReclamosTabla();
+    cargarResenasTabla();
     cargarLibros();
     cargarUsuarios();
-    agregarReclamo();
+    agregarResena();
 });
-
 
 function cargarLibros() {
     $.ajax({
@@ -16,9 +14,7 @@ function cargarLibros() {
         url: "https://localhost:7003/api/Libros",
         dataType: "json",
         success: function (response) {
-
             const librosFiltrados = response.filter(libro => libro.id_Estado == 1);
-
             $.each(librosFiltrados, function (_, libro) {
                 libros[libro.id_libro] = libro.titulo;
             });
@@ -37,7 +33,7 @@ function cargarLibros() {
                 selectEdit.append(`<option value="${libro.id_libro}">${libro.titulo}</option>`);
             });
 
-            cargarReclamosTabla();
+            cargarResenasTabla();
         },
         error: function (xhr, status, error) {
             console.log("ERROR al cargar libros:", error);
@@ -45,17 +41,14 @@ function cargarLibros() {
     });
 }
 
-
 function cargarUsuarios() {
     $.ajax({
         type: "GET",
         url: "https://localhost:7003/api/Usuarios",
         dataType: "json",
         success: function (response) {
-
             const usuariosFiltrados = response.filter(usuario => usuario.id_estado == 1);
             $.each(usuariosFiltrados, function (_, usuario) {
-
                 usuarios[usuario.id_usuario] = usuario.nombre;
             });
 
@@ -73,7 +66,7 @@ function cargarUsuarios() {
                 selectEdit.append(`<option value="${usuario.id_usuario}">${usuario.nombre}</option>`);
             });
 
-            cargarReclamosTabla();
+            cargarResenasTabla();
         },
         error: function (xhr, status, error) {
             console.log("ERROR al cargar usuarios:", error);
@@ -81,44 +74,43 @@ function cargarUsuarios() {
     });
 }
 
-
-function cargarReclamosTabla() {
+function cargarResenasTabla() {
     $.ajax({
         type: "GET",
-        url: "https://localhost:7003/api/Reclamos",
+        url: "https://localhost:7003/api/Resenas",
         dataType: "json",
         success: function (response) {
-            const tabla = $('#tablaReclamos tbody');
+            const tabla = $('#tablaResenas tbody');
             tabla.empty();
-            $.each(response, function (_, reclamo) {
+            $.each(response, function (_, resena) {
 
-                const tituloLibro = libros[reclamo.id_Libro] || 'No definido';
-                const nombreUsuario = usuarios[reclamo.id_Usuario] || 'No definido';
+                const tituloLibro = libros[resena.id_Libro] || 'No definido';
+                const nombreUsuario = usuarios[resena.id_Usuario] || 'No definido';
                 const row = `
                     <tr>
-                        <td>${reclamo.id_Reclamo}</td>
-                        <td>${reclamo.descripcion}</td>
+                        <td>${resena.id_Resena}</td>
+                        <td>${resena.resena}</td>
                         <td>${tituloLibro}</td>
                         <td>${nombreUsuario}</td>
-                        <td>${reclamo.id_Estado == 1 ?
+                        <td>${resena.id_Estado == 1 ?
                         `<span class="text-success">Activo</span>` :
                         `<span class="text-danger">Inactivo</span>`
                     }</td>
                         <td>
-                            ${reclamo.id_Estado == 1 ?
-                        `<button class="btn btn-danger rounded px-2 py-1" onclick="editarEstadoReclamo(${reclamo.id_Reclamo}, '${reclamo.descripcion}', ${reclamo.id_Libro}, ${reclamo.id_Usuario}, 2)">
+                            ${resena.id_Estado == 1 ?
+                        `<button class="btn btn-danger rounded px-2 py-1" onclick="editarEstadoResena(${resena.id_Resena}, '${resena.resena}', ${resena.id_Libro}, ${resena.id_Usuario}, 2)">
                                     <i class="fa-solid fa-eye-slash"></i> Inactivar
                                 </button>` :
-                        `<button class="btn btn-success rounded px-2 py-1" onclick="editarEstadoReclamo(${reclamo.id_Reclamo}, '${reclamo.descripcion}', ${reclamo.id_Libro}, ${reclamo.id_Usuario}, 1)">
+                        `<button class="btn btn-success rounded px-2 py-1" onclick="editarEstadoResena(${resena.id_Resena}, '${resena.resena}', ${resena.id_Libro}, ${resena.id_Usuario}, 1)">
                                     <i class="fa-solid fa-eye"></i> Activar
                                 </button>`
                     }
-                            <button data-bs-toggle="modal" data-bs-target="#exampleModal3" onclick="obtenerDatosActualizadosReclamo(${reclamo.id_Reclamo}, '${reclamo.descripcion}', ${reclamo.id_Libro}, ${reclamo.id_Usuario}, ${reclamo.id_Estado})" class="btn btn-primary rounded px-2 py-1">
+                            <button data-bs-toggle="modal" data-bs-target="#exampleModal3" onclick="obtenerDatosActualizadosResena(${resena.id_Resena}, '${resena.resena}', ${resena.id_Libro}, ${resena.id_Usuario}, ${resena.id_Estado})" class="btn btn-primary rounded px-2 py-1">
                                 Editar
                             </button>
                         </td>
                         <td>
-                            <button onclick="eliminarReclamoId(${reclamo.id_Reclamo})" class="btn btn-danger rounded px-2 py-1">
+                            <button onclick="eliminarResenaId(${resena.id_Resena})" class="btn btn-danger rounded px-2 py-1">
                                 <i class="fa-solid fa-trash"></i> Eliminar
                             </button>
                         </td>
@@ -128,40 +120,38 @@ function cargarReclamosTabla() {
             });
         },
         error: function (xhr, status, error) {
-            console.log("ERROR al cargar reclamos:", error);
+            console.log("ERROR al cargar reseñas:", error);
         }
     });
 }
 
-
-function editarEstadoReclamo(id_Reclamo, descripcion, id_Libro, id_Usuario, nuevoEstado) {
+function editarEstadoResena(id_Resena, resenaText, id_Libro, id_Usuario, nuevoEstado) {
     const datos = {
-        id_Reclamo: id_Reclamo,
-        descripcion: descripcion,
+        id_Resena: id_Resena,
+        resena: resenaText,
         id_Libro: id_Libro,
         id_Usuario: id_Usuario,
         id_Estado: nuevoEstado
     };
     $.ajax({
         type: "PUT",
-        url: `https://localhost:7003/api/Reclamos/${id_Reclamo}`,
+        url: `https://localhost:7003/api/Resenas/${id_Resena}`,
         data: JSON.stringify(datos),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function (response) {
-            cargarReclamosTabla();
+            cargarResenasTabla();
         },
         error: function (xhr, status, error) {
-            console.log("ERROR al actualizar estado del reclamo:", error);
+            console.log("ERROR al actualizar estado de la reseña:", error);
         }
     });
 }
 
-
-function eliminarReclamoId(id) {
+function eliminarResenaId(id) {
     const idParseada = parseInt(id);
     Swal.fire({
-        title: "¿Estás seguro que deseas eliminar este Reclamo?",
+        title: "¿Estás seguro que deseas eliminar esta Reseña?",
         html: "Si lo haces no podrás recuperar la información.",
         showDenyButton: true,
         confirmButtonText: "SI",
@@ -170,81 +160,78 @@ function eliminarReclamoId(id) {
         if (result.isConfirmed) {
             $.ajax({
                 type: "DELETE",
-                url: `https://localhost:7003/api/Reclamos/${idParseada}`,
+                url: `https://localhost:7003/api/Resenas/${idParseada}`,
                 success: function (response) {
-                    Swal.fire("Eliminado", "El reclamo ha sido eliminado.", "success");
-                    cargarReclamosTabla();
+                    Swal.fire("Eliminado", "La reseña ha sido eliminada.", "success");
+                    cargarResenasTabla();
                 },
                 error: function (xhr, status, error) {
-                    console.log("ERROR al eliminar reclamo:", error);
-                    Swal.fire("Error", "No se pudo eliminar el reclamo.", "error");
+                    console.log("ERROR al eliminar reseña:", error);
+                    Swal.fire("Error", "No se pudo eliminar la reseña.", "error");
                 }
             });
         } else if (result.isDenied) {
-            Swal.fire("Cancelado", "No se eliminó el reclamo.", "info");
+            Swal.fire("Cancelado", "No se eliminó la reseña.", "info");
         }
     });
 }
 
-
-function agregarReclamo() {
-    $('#ReclamosAgregar').on('submit', function (event) {
+function agregarResena() {
+    $('#ResenasAgregar').on('submit', function (event) {
         event.preventDefault();
 
         const datos = {
-            descripcion: $('#descripcionReclamo').val(),
+            resena: $('#resena').val(),
             id_Libro: $('#librosOption').val(),
             id_Usuario: $('#usuariosOption').val()
         };
         $.ajax({
             type: "POST",
-            url: "https://localhost:7003/api/Reclamos",
+            url: "https://localhost:7003/api/Resenas",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             data: JSON.stringify(datos),
             success: function (response) {
                 $('#exampleModal').modal('hide');
-                cargarReclamosTabla();
+                cargarResenasTabla();
             },
             error: function (xhr, status, error) {
-                console.log("ERROR al agregar reclamo:", error);
+                console.log("ERROR al agregar reseña:", error);
             }
         });
     });
 }
 
-
-function obtenerDatosActualizadosReclamo(id_Reclamo, descripcion, id_Libro, id_Usuario, id_Estado) {
-    $('#idEdit').val(id_Reclamo);
-    $('#descripcionEdit').val(descripcion);
+function obtenerDatosActualizadosResena(id_Resena, resenaText, id_Libro, id_Usuario, id_Estado) {
+    $('#idEdit').val(id_Resena);
+    $('#resenaEdit').val(resenaText);
     $('#librosOptionEdit').val(id_Libro);
     $('#usuariosOptionEdit').val(id_Usuario);
     $('#estadoEdit').val(id_Estado);
     $('#exampleModal3').modal('show');
 }
 
-
-$('#ReclamosActualizar').on('submit', function (event) {
+$('#ResenasActualizar').on('submit', function (event) {
     event.preventDefault();
     const datos = {
-        id_Reclamo: $('#idEdit').val(),
-        descripcion: $('#descripcionEdit').val(),
+        id_Resena: $('#idEdit').val(),
+        resena: $('#resenaEdit').val(),
         id_Libro: $('#librosOptionEdit').val(),
         id_Usuario: $('#usuariosOptionEdit').val(),
         id_Estado: $('#estadoEdit').val()
     };
     $.ajax({
         type: "PUT",
-        url: `https://localhost:7003/api/Reclamos/${datos.id_Reclamo}`,
+        url: `https://localhost:7003/api/Resenas/${datos.id_Resena}`,
         data: JSON.stringify(datos),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function (response) {
-            cargarReclamosTabla();
+            cargarResenasTabla();
             $('#exampleModal3').modal('hide');
         },
         error: function (xhr, status, error) {
-            console.log("ERROR al actualizar reclamo:", error);
+            console.log("ERROR al actualizar reseña:", error);
         }
     });
 });
