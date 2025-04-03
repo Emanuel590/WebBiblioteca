@@ -1,0 +1,143 @@
+﻿@page
+@model WebBiblioteca.Pages.ProductosAdminModel
+@{
+    ViewData["Title"] = "Productos admin";
+}
+
+
+<div class="container my-5">
+    <div class="card">
+        <h1 class="card-header text-center text-white" style="background-color: #F2A172">Registro de productos</h1>
+        <div class="card-body">
+            <table class="table" id="tablaProductosAdmin">
+                <thead>
+                    <tr class="text-center">
+                        <th scope="col">#</th>
+                        <th scope="col">Stock</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Categoria</th>
+                        <th scope="col">Estado</th>
+                    </tr>
+                </thead>
+                <tbody class="text-center">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<!-- Agregar -->
+<div class="text-center">
+    <a type="button" class="btn rounded-0" style="background-color: #F25835; border: none;" data-bs-toggle="modal" data-bs-target="#exampleModalPrAdd">
+        <h6 class="text-white fw-bold"><i class="fa-solid fa-book-open px-1 "></i>Agregar Producto</h6>
+    </a>
+</div>
+
+
+<!-- Add -->
+<div class="modal fade" id="exampleModalPrAdd" tabindex="-1" aria-labelledby="exampleModalLabelPrAdd" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="text-center">
+                    <h1 class="modal-title fs-5 " id="exampleModalLabelPrAdd">Agregar producto</h1>
+
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" id="BinarioONoBinarioPrAdd">
+                    <div class="mb-3">
+                        <label for="producto" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="producto" placeholder="Ingrese el nombre">
+                    </div>
+
+
+                    <div class="mb-3">
+                        <input type="hidden" class="form-control" id="producto" placeholder="Actualice el producto">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="producto" class="form-label">Actualice el stock</label>
+                        <input type="number" class="form-control" id="producto" placeholder="Actualice el stock" min="0">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="producto" class="form-label">Actualice el stock</label>
+                        <input type="number" class="form-control" id="producto" placeholder="Actualice el stock">
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn border-0" style="background-color: #F25835; border: #ffff; outline: none !important; box-shadow: none !important;"><h5 class="text-white fw-bold"><i class="fa-solid fa-square-check  px-2"></i>Agregar</h5></button>
+                    </div>
+
+
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal6" tabindex="-1" aria-labelledby="exampleModalLabel6" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel6">Actualizar productos</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" id="ActualizarFormP">
+                    <div class="mb-3">
+                        <input type="hidden" class="form-control" id="idProductos_Editar" placeholder="Actualice el producto">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="producto" class="form-label">Actualice el stock</label>
+                        <input type="number" class="form-control" id="Stock_Editar" placeholder="Actualice el stock" min="0">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="producto" class="form-label">Actualice el nombre</label>
+                        <input type="text" class="form-control" id="Nombre_Editar" placeholder="Actualice el nombre">
+                    </div>
+
+
+
+                    <div class="mb-3">
+                        <label for="producto" class="form-label">Actualizar la categoría</label>
+                        <select class="form-select" id="idCategoriaP_Editar">
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <input type="hidden" class="form-control" id="estado_EditarP" >
+                    </div>
+
+                    <div class="text-center">
+                        <button data-bs-toggle="modal" data-bs-target="#exampleModal6" class="btn btn-primary rounded px-2 py-1">
+                            Editar
+                        </button>
+
+
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/js/Productos.js"></script>

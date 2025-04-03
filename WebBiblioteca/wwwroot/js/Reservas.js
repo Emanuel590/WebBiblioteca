@@ -3,20 +3,9 @@ $(document).ready(function () {
     cargarReservasTabla();
 });
 
-//Mostrar Reservas
-
-$(document).ready(function () {
-    cargarEstadosReserva(); // Si esto también puede cargarse solo una vez
-    cargarLibroReserva();
-    cargarUsuariosReserva();
-
-    // Una vez cargados todos (podés dar un pequeño delay si hace falta)
-    setTimeout(() => {
-        cargarReservasTabla();
-    }, 500); // Ajustá el tiempo si los datos tardan más
-});
-
+//Mostrar Reservas ADMIN
 function cargarReservasTabla() {
+    cargarEstadosReserva().then(function () {    
     $.ajax({
         type: "GET",
         url: "https://localhost:7003/api/Reservas",
@@ -36,32 +25,25 @@ function cargarReservasTabla() {
 
                 });
 
-                const libro = LibroIdStr.find(lib => lib.id_Libro === adminReservas.id_Libro);
-                const usuario = UsuarioIdStr.find(user => user.id_Usuario === adminReservas.id_Usuario);
-
-                const nombreLibro = libro ? libro.titulo : 'Desconocido';
-                const nombreUsuario = usuario ? usuario.nombre : 'Desconocido';
-
                 const row = `
-               <tr>
+                <tr>
                         <td>${adminReservas.id_reservas}</td>
-                        <td>${nombreLibro}</td>
-                        <td>${nombreUsuario}</td>
+                        <td>${adminReservas.id_Libro}</td>
+                        <td>${adminReservas.id_Usuario}</td>
                         <td>${adminReservas.fecha}</td>
                        
  <td>
-                                  <select class="form-select form-select-sm"
-                                    onchange="actualizarEstadoAdminReservasId(${adminReservas.id_reservas}, ${adminReservas.id_Libro}, ${adminReservas.id_Usuario}, '${adminReservas.fecha}', this.value)">
-                                ${estadosD}
-                            </select>
+                                  <select class="form-select form-select-sm" onchange="actualizarEstadoAdminReservasId(${adminReservas.id_reservas}, ${adminReservas.id_Libro}, ${adminReservas.id_Usuario}, '${adminReservas.fecha}', this.value)">
+                                    ${estadosD}
+                                </select>
                             </td>
-                           
+                           d
                             <td>
-                            <button onclick="eliminarReservaAdminId(${adminReservas.id_reservas})" class="btn btn-danger rounded px-2 py-1">
-                                <i class="fa-solid fa-trash"></i> Eliminar
-                            </button>
-                        </td>
-                    </tr>`;
+                                <button onclick="eliminarReservaAdminId(${adminReservas.id_reservas})" class="btn btn-danger rounded px-2 py-1">
+                                    <i class="fa-solid fa-trash"></i> Eliminar
+                                </button>
+                            </td>
+                        </tr>`;
 
                 tabla.append(row);
             });
@@ -69,7 +51,7 @@ function cargarReservasTabla() {
         error: function (xhr, status, error) {
             console.log("ERROR:", error, xhr, status);
         }
-  
+    });
     });
 }
 
@@ -90,15 +72,14 @@ function cargarEstadosReserva() {
     });
 }
 
-//-----por terminar pasar de in a string ---------//
-let LibroIdStr = [];
+//-----por terminar pasar de int a string ---------//
 function cargarLibroReserva() {
     return $.ajax({
         type: "GET",
         url: "https://localhost:7003/api/Libros",
         dataType: "json",
         success: function (response) {
-            LibroIdStr = response;
+            estadosAlm = response;
         },
         error: function (xhr, status, error) {
             console.log("ERROR cargando estados:", error, xhr, status);
@@ -106,15 +87,13 @@ function cargarLibroReserva() {
     });
 }
 
-let UsuarioIdStr = [];
-
 function cargarUsuariosReserva() {
     return $.ajax({
         type: "GET",
         url: "https://localhost:7003/api/Usuarios",
         dataType: "json",
         success: function (response) {
-            UsuarioIdStr = response;
+            estadosAlm = response;
         },
         error: function (xhr, status, error) {
             console.log("ERROR cargando estados:", error, xhr, status);
