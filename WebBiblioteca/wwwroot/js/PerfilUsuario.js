@@ -53,6 +53,7 @@ function cargarPerfilUsuario() {
     });
 }
 
+
 function mostrarListaUsuariosAdmin(listaUsuarios, emailUsuario) {
     var usuarioAdmin = listaUsuarios.find(u => u.email === emailUsuario && u.id_role === 1);
 

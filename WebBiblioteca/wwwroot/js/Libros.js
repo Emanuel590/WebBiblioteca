@@ -397,7 +397,7 @@ function mostrarLibro(id) {
 
                     const contenedor = $('#contenedorLibro');
 
-                    contenedor.empty(); // Limpiamos el contenedor por si tiene contenido previo
+                    contenedor.empty(); 
 
                     contenedor.append(
                         `
@@ -426,7 +426,7 @@ function mostrarLibro(id) {
 `
                     );
 
-                    // Llamamos a la función que carga las reseñas para este libro
+        
                     mostrarResenasPorLibro(libro.id_libro);
 
                 }).fail(() => {
@@ -448,7 +448,7 @@ function mostrarResenasPorLibro(idLibro) {
         method: "GET",
         dataType: "json",
         success: function (resenas) {
-            // Filtrar reseñas del libro actual
+            
             const resenasDelLibro = resenas.filter(r => r.id_Libro === idLibro);
             const contenedor = $("#contenedorResenas");
             contenedor.empty();
@@ -458,7 +458,7 @@ function mostrarResenasPorLibro(idLibro) {
                 return;
             }
 
-            // Por cada reseña, se obtiene el nombre del usuario y se muestra la tarjeta
+            
             $.each(resenasDelLibro, function (_, resena) {
                 $.ajax({
                     url: `https://localhost:7003/api/Usuarios/${resena.id_Usuario}`,
