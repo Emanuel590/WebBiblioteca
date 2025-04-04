@@ -1,0 +1,26 @@
+﻿@page "{id}"
+@model WebBiblioteca.Pages.LibroModel
+@{
+
+}
+
+<div class="container my-5" id="contenedorLibro">
+
+
+   
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+@section Scripts {
+    <script src="~/js/Libros.js">
+        
+    
+    </script>
+
+    <script>
+        const libroId = @Model.Id;
+        mostrarLibro(libroId);
+    </script>
+}

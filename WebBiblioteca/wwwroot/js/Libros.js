@@ -6,6 +6,7 @@
     agregarAutoresALibros();
     agregarGenerosALibros();
     agregarLibros();
+    mostrarLibros();
 })
 
 let autores = []
@@ -59,9 +60,11 @@ function cargarLibrosTabla() {
             $.each(response, function (_, Libros) {
                 const autorNombre = autores[Libros.id_Autor] || 'No definido'
                 const generoNombre = generos[Libros.id_Genero] || 'No definido'
+
                 const row = `
                     <tr>
                         <td>${Libros.id_libro}</td>
+                        <td><img src="${Libros.fotoPath}" style="width: 75px; height:75px;" class="img-thumbnail" alt="${Libros.titulo}"></td>
                         <td>${Libros.titulo}</td>
                         <td>${Libros.stock}</td>
                         <td>${Libros.precio_alquiler}</td>
@@ -158,37 +161,7 @@ function eliminarLibroId(id) {
     });
 }
 
-function agregarLibros() {
-    $('#AutoresAgregar').on('submit', function (event) {
-        event.preventDefault();
 
-        var datos =
-        {
-            nombre: $('#nombre').val(),
-            apellido: $('#apellido').val()
-        }
-
-        $.ajax({
-            type: "POST",
-            url: "https://localhost:7003/api/Autores",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: JSON.stringify(datos),
-            success: function (datos) {
-                $('#exampleModal').modal('hide');
-                cargarAutoresTabla();
-            },
-            error: function (xhr, status, error) {
-                console.log("ERROR: ", error, xhr, status)
-            }
-
-        });
-
-
-
-    })
-
-}
 
 function agregarAutoresALibros() {
     $.ajax({
@@ -275,39 +248,50 @@ function agregarGenerosALibros() {
 }
 
 function agregarLibros() {
-    $('#AutoresAgregar').on('submit', function (event) {
+    $('#LibrosAgregar').on('submit', function (event) {
         event.preventDefault();
 
-        var datos =
-        {
-            "titulo": $('#titulo').val(),
-            "stock": $('#stock').val(),
-            "precio_alquiler": $('#precioAlquiler').val(),
-            "id_Autor": $('#autoresOption').val(),
-            "id_Genero": $('#GeneroOption').val()
+        // 1. Crear un FormData y extraer los campos del formulario
+        // Opción A: Tomar todos los campos del form automáticamente
+        // var formData = new FormData(this);
+
+        // Opción B: Agregar manualmente campo por campo
+        var formData = new FormData();
+        formData.append("titulo", $('#titulo').val());
+        formData.append("stock", $('#stock').val());
+        formData.append("precio_alquiler", $('#precioAlquiler').val());
+        formData.append("id_Autor", $('#autoresOption').val());
+        formData.append("id_Genero", $('#GeneroOption').val());
+
+        // 2. Adjuntar el archivo desde el input tipo file
+        // Asumiendo que tu input file tiene id="foto"
+        var fileInput = document.getElementById('foto');
+        if (fileInput.files.length > 0) {
+            formData.append("Foto", fileInput.files[0]); 
+            // "Foto" debe coincidir con la propiedad IFormFile Foto en tu modelo C#
         }
 
+        // 3. Hacer la petición AJAX con FormData
         $.ajax({
             type: "POST",
             url: "https://localhost:7003/api/Libros",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: JSON.stringify(datos),
+            data: formData,
+
+            // IMPORTANTE: Para que jQuery no convierta el FormData a texto
+            contentType: false,
+            processData: false,
+
             success: function (datos) {
                 $('#exampleModal').modal('hide');
                 cargarLibrosTabla();
             },
             error: function (xhr, status, error) {
-                console.log("ERROR: ", error, xhr, status)
+                console.log("ERROR: ", error, xhr, status);
             }
-
         });
-
-
-
-    })
-
+    });
 }
+
 
 
 function obtenerDatosActualizadosLibro(id_libro, titulo, stock, precio_alquiler, autor, genero, estado) {
@@ -353,3 +337,99 @@ $('#LibrosActualizar').on('submit', function (event) {
         }
     });
 });
+
+
+
+function mostrarLibros() {
+    $.ajax({
+        type: "GET",
+        url: "https://localhost:7003/api/Libros",
+        dataType: "json",
+        success: function (response) {
+            const carta = $('#librosMostrar');
+            carta.empty();
+            $.each(response, function (_, Libros) {
+                const autorNombre = autores[Libros.id_Autor] || 'No definido'
+
+
+                const libro =
+                    `
+        <div class="col mx-3">
+            <div class="card border-0 h-100">
+                <a href="/Libro/${Libros.id_libro}" class="text-decoration-none text-center">
+                    <img src="${Libros.fotoPath}" alt="Portada" class="card-img-top" style="height: 220px; object-fit: contain;">
+                </a>
+                <div class="card-body px-0">
+                    <h6 class="fw-semibold text-truncate" title="${Libros.titulo}">
+                        ${Libros.titulo}
+                    </h6>
+                    <p class="text-muted small mb-1 text-uppercase">${autorNombre}</p>
+                    <p class="fw-semibold text-dark">₡${Libros.precio_alquiler}</p>
+                </div>
+
+            </div>
+
+
+                    `;
+                carta.append(libro);
+            });
+        },
+        error: function (xhr, status, error) {
+            console.log("ERROR:", error, xhr, status);
+        }
+    });
+
+
+
+
+}
+
+function mostrarLibro(id) {
+    $.ajax({
+        url: `https://localhost:7003/api/Libros/${id}`,
+        method: 'GET',
+        success: function (libro) {
+
+            $.get(`https://localhost:7003/api/Autores/${libro.id_Autor}`, function (autor) {
+
+                $.get(`https://localhost:7003/api/Generos/${libro.id_Genero}`, function (genero) {
+
+                    const contenedor = $('#contenedorLibro')
+
+                    contenedor.append(
+`
+                        <div class="row">
+                            <div class="col-md-4 text-center">
+                                <img src="${libro.fotoPath}" class="img-fluid" style="max-height: 300px;" alt="Portada">
+                            </div>
+                            <div class="col-md-8">
+                                <h2>${libro.titulo}</h2>
+                                <p><strong>Autor:</strong> ${autor.nombre}</p>
+                                <p><strong>Género:</strong> ${genero.nombre}</p>
+                                <p><strong>Precio alquiler:</strong> ₡${libro.precio_alquiler}</p>
+                             <button class="btn mt-3" style="background-color: #F25835; border: none; color: white;">Comprar</button>
+                             </div>
+
+                             
+
+
+                        
+                              
+                        </div>
+                    `
+                    )
+
+
+                }).fail(() => {
+                    $('#contenedorLibro').html('<p class="text-danger">Error al cargar el género</p>');
+                });
+            }).fail(() => {
+                $('#contenedorLibro').html('<p class="text-danger">Error al cargar el autor</p>');
+            });
+        },
+        error: function () {
+            $('#contenedorLibro').html('<p class="text-danger">Error al cargar el libro</p>');
+        }
+    });
+}
+
