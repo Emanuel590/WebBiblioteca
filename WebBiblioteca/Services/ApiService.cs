@@ -53,6 +53,29 @@ namespace WebBiblioteca.Services
             return response.IsSuccessStatusCode;
         }
 
+        public async Task<bool> RegisterEmpleadoAsync(RegisterEmpleadosModel register)
+        {
+            var json = JsonConvert.SerializeObject(new
+            {
+                nombre = register.nombre,
+                email = register.email,
+                codigo_postal = register.codigo_postal,
+                telefono = register.telefono,
+                cedula = register.cedula,
+                contra = register.contra,
+                id_role = register.id_role,
+                id_estado = register.id_estado
+            });
+
+            var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PostAsync($"{_apiUrl}/Usuarios/register", content);
+            return response.IsSuccessStatusCode;
+        }
+
+
+
+
     }
 }
 

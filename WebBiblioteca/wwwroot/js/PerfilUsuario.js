@@ -73,7 +73,7 @@ function mostrarListaUsuariosAdmin(listaUsuarios, emailUsuario) {
                 <p><strong>Código Postal:</strong> ${usuarioAdmin.codigo_postal || 'No disponible'}</p>
                 <p><strong>Teléfono:</strong> ${usuarioAdmin.telefono}</p>
                 <p><strong>Cédula:</strong> ${usuarioAdmin.cedula}</p>
-                <button class="btn btn-success" onclick="crearUsuario()">Crear Usuario</button>
+                <button class="btn btn-success" onclick="location.href='/CreateEmpleado'">Crear Usuario Empleado</button>
                 <button class="btn btn-warning" onclick="editarUsuario(${usuarioAdmin.id_usuario})">Editar Mi Información</button>
             </div>
         </div>
