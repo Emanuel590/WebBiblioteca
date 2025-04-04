@@ -46,7 +46,7 @@ namespace WebBiblioteca.Pages
                     HttpContext.Session.SetString("AuthToken", token); 
                     Console.WriteLine($" Token guardado en sesión: {HttpContext.Session.GetString("AuthToken")}");
 
-                    return new JsonResult(new { success = true, token });
+                    return new JsonResult(new { success = true, token, email = Input.Email });
                 }
             }
 

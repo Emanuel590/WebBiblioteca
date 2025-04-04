@@ -1,23 +1,83 @@
 ﻿@page
 @model WebBiblioteca.Pages.PerfilUsuarioModel
 @{
-	ViewData["Title"] = "Perfil de Usuario";
+    ViewData["Title"] = "Perfil de Usuario";
 }
 @using Microsoft.AspNetCore.Http
-
 
 <script>
     var authToken = '@HttpContext.Session.GetString("AuthToken")';
 </script>
 
-
 <div id="perfilUsuario" class="text-center">
-
     <p class="text-muted">Cargando Perfil...</p>
+</div>
 
+<div class="modal fade" id="editarUsuarioModal" tabindex="-1" aria-labelledby="editarUsuarioModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editarUsuarioModalLabel">Editar Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editarUsuarioForm">
+                    <input type="hidden" id="idUsuario" />
+                    <!-- Campos ocultos para contra, id_role, id_estado -->
+                    <input type="hidden" id="contra" />
+                    <input type="hidden" id="id_role" />
+                    <input type="hidden" id="id_estado" />
+
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="telefono" class="form-label">Teléfono</label>
+                        <input type="text" class="form-control" id="telefono" name="telefono" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="cedula" class="form-label">Cédula</label>
+                        <input type="text" class="form-control" id="cedula" name="cedula" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="codigoPostal" class="form-label">Código Postal</label>
+                        <input type="text" class="form-control" id="codigoPostal" name="codigoPostal">
+                    </div>
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" onclick="guardarEdicionUsuario()">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para Confirmar Eliminación -->
+<div class="modal fade" id="eliminarUsuarioModal" tabindex="-1" aria-labelledby="eliminarUsuarioModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="eliminarUsuarioModalLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas eliminar este usuario?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" onclick="eliminarUsuario()">Eliminar</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="~/js/perfilUsuario.js"></script>
- 
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="~/js/perfilUsuario.js"></script>

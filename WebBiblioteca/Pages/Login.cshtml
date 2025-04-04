@@ -35,7 +35,7 @@
     document.getElementById('loginForm').addEventListener('submit', function (e) {
         e.preventDefault(); 
 
-        fetch('/Login', {
+        fetch(window.location.pathname, {
             method: 'POST',
             body: new FormData(document.querySelector('form')), 
         })
@@ -45,6 +45,7 @@
                 console.log(" Token recibido desde el backend:", data.token);
                 localStorage.setItem('AuthToken', data.token);
                 sessionStorage.setItem('AuthToken', data.token);
+                sessionStorage.setItem('EmailUsuario', data.email);
                 console.log(" Token guardado en localStorage y sessionStorage");
                 window.location.href = '/Index'; 
             } else {

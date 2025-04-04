@@ -3,7 +3,8 @@
 });
 
 function cargarPerfilUsuario() {
-    var authToken = sessionStorage.getItem('AuthToken'); 
+    var authToken = sessionStorage.getItem('AuthToken');
+    var emailUsuario = sessionStorage.getItem('EmailUsuario');
 
     if (!authToken || authToken.trim() === "") {
         alert("No se encontró el token. Por favor, inicie sesión.");
@@ -11,7 +12,14 @@ function cargarPerfilUsuario() {
         return;
     }
 
+    if (!emailUsuario || emailUsuario.trim() === "") {
+        alert("No se encontró el email del usuario. Por favor, inicie sesión.");
+        window.location.href = "/Index";
+        return;
+    }
+
     console.log('Token enviado:', authToken);
+    console.log('Email del usuario en sesión:', emailUsuario);
 
     $.ajax({
         url: 'https://localhost:7003/api/usuarios',
@@ -20,85 +28,70 @@ function cargarPerfilUsuario() {
             'Authorization': 'Bearer ' + authToken
         },
         success: function (response) {
-            if (response.length === 1) {
-                mostrarPerfilCliente(response[0]);
-            } else if (response.length > 1) {
-                var rol = response[0].id_role;
-                if (rol === 1) {
-                    mostrarPerfilAdmin(response);
-                } else if (rol === 3) {
-                    mostrarPerfilEmpleado(response);
-                } else {
-                    mostrarPerfilCliente(response[0]);
-                }
+            var usuarioActual = response.find(u => u.email === emailUsuario);
+            if (!usuarioActual) {
+                $('#perfilUsuario').html('<p class="text-danger">No se encontró información del usuario.</p>');
+                return;
+            }
+
+            var rol = usuarioActual.id_role;
+
+            if (rol === 1) {
+                mostrarListaUsuariosAdmin(response, emailUsuario);
+            } else if (rol === 2) {
+                mostrarPerfilCliente(usuarioActual);
+            } else if (rol === 3) {
+                mostrarListaUsuariosEmpleado(response, emailUsuario);
+            } else {
+                $('#perfilUsuario').html('<p class="text-info">Tu perfil no requiere acciones específicas.</p>');
             }
         },
         error: function (xhr, status, error) {
             console.error("Error al cargar perfil:", error);
-            console.log('Respuesta del servidor:', xhr.responseText);
             $('#perfilUsuario').html('<p class="text-danger">Error al cargar los datos del perfil. ' + xhr.responseText + '</p>');
         }
     });
 }
 
-function mostrarPerfilCliente(usuario) {
-    var html = `
-        <div class="card mb-4">
-            <div class="card-header text-center" style="background-color: #F2A172;">
-                <h3>Perfil de Cliente</h3>
-            </div>
-            <div class="card-body">
-                <p><strong>Nombre:</strong> ${usuario.nombre}</p>
-                <p><strong>Email:</strong> ${usuario.email}</p>
-                <p><strong>Código Postal:</strong> ${usuario.codigo_postal || 'No definido'}</p>
-                <p><strong>Teléfono:</strong> ${usuario.telefono}</p>
-                <p><strong>Cédula:</strong> ${usuario.cedula}</p>
-                <button class="btn" style="background-color: #F25835; color: white;" onclick="editarPerfilCliente()">Editar Información</button>
-            </div>
-        </div>
-    `;
-    $('#perfilUsuario').html(html);
-}
+function mostrarListaUsuariosAdmin(listaUsuarios, emailUsuario) {
+    var usuarioAdmin = listaUsuarios.find(u => u.email === emailUsuario && u.id_role === 1);
 
-// Función para mostrar el perfil de administrador: crear, editar y borrar usuarios
-function mostrarPerfilAdmin(listaUsuarios) {
-    var usuarioAdmin = listaUsuarios.find(u => u.id_role === 1); 
+    if (!usuarioAdmin) {
+        $('#perfilUsuario').html('<p class="text-danger">No se encontró información del usuario administrador.</p>');
+        return;
+    }
+
     var html = `
         <div class="card mb-4">
             <div class="card-header text-center" style="background-color: #F2A172;">
-                <h3>Perfil de Admin</h3>
+                <h3>Panel de Administración</h3>
             </div>
             <div class="card-body">
-                <p><strong>Nombre del Administrador:</strong> ${usuarioAdmin.nombre}</p>
+                <h5><strong>Mi Perfil:</strong></h5>
+                <p><strong>Nombre:</strong> ${usuarioAdmin.nombre}</p>
                 <p><strong>Email:</strong> ${usuarioAdmin.email}</p>
-                <p><strong>Código Postal:</strong> ${usuarioAdmin.codigo_postal || 'No definido'}</p>
+                <p><strong>Código Postal:</strong> ${usuarioAdmin.codigo_postal || 'No disponible'}</p>
                 <p><strong>Teléfono:</strong> ${usuarioAdmin.telefono}</p>
                 <p><strong>Cédula:</strong> ${usuarioAdmin.cedula}</p>
-                <hr>
-                <button class="btn btn-success" style="background-color: #F25835; color: white;" onclick="crearUsuario()">Crear Usuario</button>
-                <button class="btn btn-warning" style="background-color: #F25835; color: white;" onclick="editarPerfilAdmin(${usuarioAdmin.id_usuario})">Editar Usuario</button> <!-- Botón para editar el perfil del admin -->
-
+                <button class="btn btn-success" onclick="crearUsuario()">Crear Usuario</button>
+                <button class="btn btn-warning" onclick="editarUsuario(${usuarioAdmin.id_usuario})">Editar Mi Información</button>
             </div>
         </div>
 
         <div class="card mb-4">
             <div class="card-header text-center" style="background-color: #F2A172;">
-                <h4>Lista de Usuarios</h4>
+                <h4>Lista de Empleados y Clientes</h4>
             </div>
             <div class="card-body">
                 <table class="table table-bordered">
                     <thead>
-                        <tr>
-                            <th>ID</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Acciones</th>
-                        </tr>
+                        <tr><th>ID</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Acciones</th></tr>
                     </thead>
                     <tbody>`;
 
-    // Excluir el administrador de la lista de usuarios
-    var usuariosSinAdmin = listaUsuarios.filter(u => u.id_role !== 1);
-
-    usuariosSinAdmin.forEach(function (u) {
-        var rolText = u.id_role === 2 ? 'Cliente' : (u.id_role === 3 ? 'Empleado' : 'Admin');
+    var usuarios = listaUsuarios.filter(u => u.id_role === 2 || u.id_role === 3);
+    usuarios.forEach(function (u) {
+        var rolText = u.id_role === 2 ? 'Cliente' : 'Empleado';
         html += `
             <tr>
                 <td>${u.id_usuario}</td>
@@ -106,45 +99,57 @@ function mostrarPerfilAdmin(listaUsuarios) {
                 <td>${u.email}</td>
                 <td>${rolText}</td>
                 <td>
-                    <button class="btn btn-warning btn-sm" style="background-color: #F25835; color: white;" onclick="editarUsuario(${u.id_usuario})">Editar</button>
-                    <button class="btn btn-danger btn-sm" style="background-color: #F25835; color: white;" onclick="eliminarUsuario(${u.id_usuario})">Borrar</button>
+                    <button class="btn btn-warning btn-sm" onclick="editarUsuario(${u.id_usuario})">Editar</button>
+                    <button class="btn btn-danger btn-sm" onclick="confirmarEliminarUsuario(${u.id_usuario})">Borrar</button>
+
                 </td>
-            </tr>
-        `;
+            </tr>`;
     });
+
     html += `
                     </tbody>
                 </table>
             </div>
         </div>
     `;
+
     $('#perfilUsuario').html(html);
 }
 
-// Función para mostrar el perfil de empleado: editar su información y la de clientes
-function mostrarPerfilEmpleado(listaUsuarios) {
-    var usuarioAutenticado = listaUsuarios.find(u => u.id_role === 3) || listaUsuarios[0];
+function mostrarListaUsuariosEmpleado(listaUsuarios, emailUsuario) {
+    var empleado = listaUsuarios.find(u => u.email === emailUsuario && u.id_role === 3);
+
+    if (!empleado) {
+        $('#perfilUsuario').html('<p class="text-danger">No se encontró la información del empleado.</p>');
+        return;
+    }
+
     var html = `
         <div class="card mb-4">
             <div class="card-header text-center" style="background-color: #F2A172;">
-                <h3>Perfil de Empleado</h3>
+                <h3>Panel de Empleado</h3>
             </div>
             <div class="card-body">
-                <p><strong>Nombre:</strong> ${usuarioAutenticado.nombre}</p>
-                <p><strong>Email:</strong> ${usuarioAutenticado.email}</p>
-                <p><strong>Código Postal:</strong> ${usuarioAutenticado.codigo_postal || 'No definido'}</p>
-                <p><strong>Teléfono:</strong> ${usuarioAutenticado.telefono}</p>
-                <p><strong>Cédula:</strong> ${usuarioAutenticado.cedula}</p>
-                <button class="btn btn-warning" style="background-color: #F25835; color: white;" onclick="editarPerfilEmpleado()">Editar Mi Información</button>
-                <hr>
+                <p><strong>Nombre:</strong> ${empleado.nombre}</p>
+                <p><strong>Email:</strong> ${empleado.email}</p>
+                <p><strong>Código Postal:</strong> ${empleado.codigo_postal || 'No disponible'}</p>
+                <p><strong>Teléfono:</strong> ${empleado.telefono}</p>
+                <p><strong>Cédula:</strong> ${empleado.cedula}</p>
+                <button class="btn btn-warning" onclick="editarUsuario()">Editar Mi Información</button>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header text-center" style="background-color: #F2A172;">
                 <h4>Lista de Clientes</h4>
+            </div>
+            <div class="card-body">
                 <table class="table table-bordered">
                     <thead>
-                        <tr>
-                            <th>ID</th><th>Nombre</th><th>Email</th><th>Acciones</th>
-                        </tr>
+                        <tr><th>ID</th><th>Nombre</th><th>Email</th><th>Acción</th></tr>
                     </thead>
                     <tbody>`;
+
     var clientes = listaUsuarios.filter(u => u.id_role === 2);
     clientes.forEach(function (u) {
         html += `
@@ -153,22 +158,39 @@ function mostrarPerfilEmpleado(listaUsuarios) {
                 <td>${u.nombre}</td>
                 <td>${u.email}</td>
                 <td>
-                    <button class="btn btn-warning btn-sm" style="background-color: #F25835; color: white;" onclick="editarUsuarioCliente(${u.id_usuario})">Editar</button>
+                    <button class="btn btn-warning btn-sm" onclick="editarUsuario(${u.id_usuario})">Editar</button>
                 </td>
-            </tr>
-        `;
+            </tr>`;
     });
+
     html += `
                     </tbody>
                 </table>
             </div>
         </div>
     `;
+
     $('#perfilUsuario').html(html);
 }
 
-function editarPerfilCliente() {
-    alert('Editar perfil cliente.');
+function mostrarPerfilCliente(cliente) {
+    var html = `
+        <div class="card mb-4">
+            <div class="card-header text-center" style="background-color: #F2A172;">
+                <h3>Perfil de Cliente</h3>
+            </div>
+            <div class="card-body">
+                <p><strong>Nombre:</strong> ${cliente.nombre}</p>
+                <p><strong>Email:</strong> ${cliente.email}</p>
+                <p><strong>Código Postal:</strong> ${cliente.codigo_postal || 'No disponible'}</p>
+                <p><strong>Teléfono:</strong> ${cliente.telefono}</p>
+                <p><strong>Cédula:</strong> ${cliente.cedula}</p>
+                <button class="btn btn-warning" onclick="editarUsuario(${cliente.id_usuario})">Editar Mi Información</button>
+            </div>
+        </div>
+    `;
+
+    $('#perfilUsuario').html(html);
 }
 
 function crearUsuario() {
@@ -176,20 +198,76 @@ function crearUsuario() {
 }
 
 function editarUsuario(id) {
-    alert('Editar usuario con ID: ' + id);
+    $.ajax({
+        url: 'https://localhost:7003/api/usuarios/' + id,
+        type: 'GET',
+        success: function (data) {
+            $('#nombre').val(data.nombre);
+            $('#email').val(data.email);
+            $('#telefono').val(data.telefono);
+            $('#cedula').val(data.cedula);
+            $('#codigoPostal').val(data.codigo_postal);
+            $('#idUsuario').val(id);
+            $('#contra').val(data.contra);
+            $('#id_role').val(data.id_role);
+            $('#id_estado').val(data.id_estado);
+
+            $('#editarUsuarioModal').modal('show');
+        },
+        error: function (xhr, status, error) {
+            alert('Error al obtener los datos del usuario: ' + error);
+        }
+    });
 }
 
-function eliminarUsuario(id) {
-    alert('Eliminar usuario con ID: ' + id);
+function guardarEdicionUsuario() {
+    var id = parseInt($('#idUsuario').val());
+    var usuarioEditado = {
+        id_usuario: id,
+        nombre: $('#nombre').val(),
+        email: $('#email').val(),
+        codigo_postal: $('#codigoPostal').val() ? parseInt($('#codigoPostal').val()) : null,
+        telefono: parseInt($('#telefono').val()),
+        cedula: parseInt($('#cedula').val()),
+        contra: $('#contra').val(),
+        id_role: parseInt($('#id_role').val()),
+        id_estado: parseInt($('#id_estado').val())
+    };
+
+    $.ajax({
+        url: 'https://localhost:7003/api/usuarios/' + id,
+        type: 'PUT',
+        contentType: 'application/json',
+        data: JSON.stringify(usuarioEditado),
+        success: function (response) {
+            $('#editarUsuarioModal').modal('hide');
+            alert('Usuario actualizado exitosamente');
+            cargarPerfilUsuario();
+        },
+        error: function (xhr, status, error) {
+            alert('Hubo un error al actualizar el usuario: ' + xhr.responseText);
+        }
+    });
 }
 
-function editarPerfilEmpleado() {
-    alert('Editar mi información (empleado).');
+function confirmarEliminarUsuario(id) {
+    $('#eliminarUsuarioModal').data('id', id);
+    $('#eliminarUsuarioModal').modal('show');
 }
 
-function editarUsuarioCliente(id) {
-    alert('Editar información del cliente con ID: ' + id);
-}
+function eliminarUsuario() {
+    var id = $('#eliminarUsuarioModal').data('id');
 
-function editarPerfilAdmin(id) {
+    $.ajax({
+        url: 'https://localhost:7003/api/Usuarios/' + id,
+        type: 'DELETE',
+        success: function (response) {
+            $('#eliminarUsuarioModal').modal('hide');
+            alert('Usuario eliminado exitosamente');
+            cargarPerfilUsuario();
+        },
+        error: function (xhr, status, error) {
+            alert('Hubo un error al eliminar el usuario: ' + error);
+        }
+    });
 }
