@@ -1,19 +1,24 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using WebBiblioteca.Models;
 using WebBiblioteca.Services;
+using Newtonsoft.Json.Linq;
+using Microsoft.AspNetCore.Http;
 
 namespace WebBiblioteca.Pages
 {
     public class LoginModel1 : PageModel
     {
         private readonly ApiService _apiService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public LoginModel1(ApiService apiService)
+        public LoginModel1(ApiService apiService, IHttpContextAccessor httpContextAccessor)
         {
             _apiService = apiService;
-            Input = new LoginInputModel(); 
+            _httpContextAccessor = httpContextAccessor;
+            Input = new LoginInputModel();
         }
 
         [BindProperty]
@@ -23,20 +28,30 @@ namespace WebBiblioteca.Pages
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var token = await _apiService.LoginAsync(new LoginModel
+            var responseBody = await _apiService.LoginAsync(new LoginModel
             {
                 Email = Input.Email,
                 Contra = Input.Contra
             });
 
-            if (token != null)
+            if (!string.IsNullOrEmpty(responseBody))
             {
-                HttpContext.Session.SetString("AuthToken", token); 
-                return RedirectToPage("/Index"); 
+                Console.WriteLine($" Respuesta de la API: {responseBody}");
+
+                var jsonResponse = JObject.Parse(responseBody); 
+                var token = jsonResponse["token"]?.ToString();
+
+                if (!string.IsNullOrEmpty(token))
+                {
+                    HttpContext.Session.SetString("AuthToken", token); 
+                    Console.WriteLine($" Token guardado en sesión: {HttpContext.Session.GetString("AuthToken")}");
+
+                    return new JsonResult(new { success = true, token, email = Input.Email });
+                }
             }
 
-            MensajeError = "Credenciales incorrectas"; 
-            return Page(); 
+            MensajeError = "Credenciales incorrectas";
+            return Page();
         }
     }
 
