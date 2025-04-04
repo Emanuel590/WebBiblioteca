@@ -1,9 +1,10 @@
 ﻿@using WebBiblioteca.Models
 @using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
 
 @{
     /*ROLE TEMPORAL PARA DIVIDIR EL NAVBAR*/
-    var role = 1;
+    var roles = 1;
 }
 
 
@@ -19,7 +20,7 @@
     <link rel="stylesheet" href="~/WebBiblioteca.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/nav.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-   
+
 
 
 </head>
@@ -35,7 +36,7 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 mx-4">
                         @{
-                            if(role == 3 || role == 2){
+                            if(roles == 3 || roles == 2){
                                 <li class="nav-item px-3">
                                     <a class="nav-link active fs-5" href="/LibrosAdmin">Libros</a>
                                 </li>
@@ -48,17 +49,17 @@
 
                         <li class="nav-item dropdown px-3">
 
-                        @{
-                               if(role == 3 || role == 2){
-                                   <a class="nav-link active fs-5" href="/GenerosAdmin" role="button">
-                                       Generos
-                                   </a>
-                               }else{
-                                   <a class="nav-link active fs-5" href="" role="button">
-                                       Generos
-                                   </a>
-                               }
-                        }
+                            @{
+                                if(roles == 3 || roles == 2){
+                                    <a class="nav-link active fs-5" href="/GenerosAdmin" role="button">
+                                        Generos
+                                    </a>
+                                }else{
+                                    <a class="nav-link active fs-5" href="" role="button">
+                                        Generos
+                                    </a>
+                                }
+                            }
 
 
                             <ul class="dropdown-menu"  id="ulGeneros">
@@ -66,7 +67,7 @@
                             </ul>
                         </li>
                         @{
-                            if (role == 3 || role == 2) {
+                            if (roles == 3 || roles == 2) {
                                 <li class="nav-item px-3">
                                     <a class="nav-link active fs-5" href="/AutoresAdmin">Autores</a>
                                 </li>
@@ -82,22 +83,46 @@
                     </ul>
 
                     <div>
-                        
-                        <!-- Verifica si el token existe en la sesión para mostrar Login o Logout -->
-                        @if (Context.Session.GetString("AuthToken") != null)
+
+                        @{
+                            var authToken = Context.Session.GetString("AuthToken");
+                            var userRole = Context.Session.GetInt32("UserRole");
+                        }
+
+                        @if (authToken != null)
                         {
+                            <!-- Ícono de perfil -->
                             <a href="/PerfilUsuario" class="text-decoration-none">
                                 <i class="fa-solid fa-user text-white px-3 fs-5"></i>
                             </a>
-                            <!-- para cerrar sesión -->
+
+                            <!-- Botón Logout -->
                             <form method="post" asp-page="/Logout" asp-page-handler="OnPost" style="display:inline;">
                                 <button type="submit" class="btn btn-link text-white fs-5 text-decoration-none">Logout</button>
                             </form>
+
+                            <!-- Links según el rol -->
+                            @if (userRole == 1 || userRole == 3) // Admin o SuperAdmin
+                            {
+                                <li class="nav-item px-3">
+                                    <a class="nav-link active fs-5" href="/LibrosAdmin">LibrosAdmin</a>
+                                </li>
+                            }
+                            else if (userRole == 2) // Usuario común
+                            {
+                                <li class="nav-item px-3">
+                                    <a class="nav-link active fs-5" href="/Libros">Libros</a>
+                                </li>
+                            }
                         }
                         else
                         {
+                            <!-- Usuario no logueado -->
                             <a href="/Login" class="text-white fs-5 px-3 text-decoration-none">Login</a>
                         }
+
+
+
 
                     </div>
 
