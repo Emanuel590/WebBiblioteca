@@ -1,40 +1,57 @@
 ﻿@page
 @model WebBiblioteca.Pages.LoginModel1
+@using Microsoft.AspNetCore.Http
+
+@inject IHttpContextAccessor HttpContextAccessor
+
 @{
     ViewData["Title"] = "Iniciar Sesión";
 }
-@using Microsoft.AspNetCore.Http
 
-@if (HttpContext.Session.GetString("AuthToken") != null)
+<h2>Iniciar Sesión</h2>
+
+@if (!string.IsNullOrEmpty(Model.MensajeError))
 {
-    
-    <script type="text/javascript">
-        window.location.href = '/Index';  
-    </script>
+    <div class="alert alert-danger">@Model.MensajeError</div>
 }
-else
-{
-    <!-- Si no está logueado, muestra el formulario de login -->
-    <h2>Iniciar Sesión</h2>
 
-    @if (!string.IsNullOrEmpty(Model.MensajeError))
-    {
-        <div class="alert alert-danger">@Model.MensajeError</div>
-    }
+<form id="loginForm" method="post">
+    <div class="mb-3">
+        <label>Email</label>
+        <input type="email" asp-for="Input.Email" class="form-control" required />
+        <span asp-validation-for="Input.Email" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label>Contraseña</label>
+        <input type="password" asp-for="Input.Contra" class="form-control" required />
+        <span asp-validation-for="Input.Contra" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Ingresar</button>
+</form>
 
-    <form method="post">
-        <div class="mb-3">
-            <label>Email</label>
-            <input type="email" asp-for="Input.Email" class="form-control" required />
-            <span asp-validation-for="Input.Email" class="text-danger"></span>
-        </div>
-        <div class="mb-3">
-            <label>Contraseña</label>
-            <input type="password" asp-for="Input.Contra" class="form-control" required />
-            <span asp-validation-for="Input.Contra" class="text-danger"></span>
-        </div>
-        <button type="submit" class="btn btn-primary">Ingresar</button>
-    </form>
+<p class="mt-3">¿No tienes cuenta? <a href="/Register">Regístrate aquí</a></p>
 
-    <p class="mt-3">¿No tienes cuenta? <a href="/Register">Regístrate aquí</a></p>
-}
+<script>
+    document.getElementById('loginForm').addEventListener('submit', function (e) {
+        e.preventDefault(); 
+
+        fetch(window.location.pathname, {
+            method: 'POST',
+            body: new FormData(document.querySelector('form')), 
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.token) {
+                console.log(" Token recibido desde el backend:", data.token);
+                localStorage.setItem('AuthToken', data.token);
+                sessionStorage.setItem('AuthToken', data.token);
+                sessionStorage.setItem('EmailUsuario', data.email);
+                console.log(" Token guardado en localStorage y sessionStorage");
+                window.location.href = '/Index'; 
+            } else {
+                console.log(" Error al iniciar sesión");
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
+</script>

@@ -19,6 +19,8 @@
     <link rel="stylesheet" href="~/WebBiblioteca.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/nav.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+   
+
 
 </head>
 <body>
@@ -80,10 +82,13 @@
                     </ul>
 
                     <div>
-                       <i class="fa-solid fa-user text-white px-3 fs-5"></i>
+                        
                         <!-- Verifica si el token existe en la sesión para mostrar Login o Logout -->
                         @if (Context.Session.GetString("AuthToken") != null)
                         {
+                            <a href="/PerfilUsuario" class="text-decoration-none">
+                                <i class="fa-solid fa-user text-white px-3 fs-5"></i>
+                            </a>
                             <!-- para cerrar sesión -->
                             <form method="post" asp-page="/Logout" asp-page-handler="OnPost" style="display:inline;">
                                 <button type="submit" class="btn btn-link text-white fs-5 text-decoration-none">Logout</button>
@@ -118,10 +123,10 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/Generos.js"></script>
-    <script src="~/js/CategoriaAdmin.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 
 
+    @RenderSection("Scripts", required: false)
 </body>
 </html>

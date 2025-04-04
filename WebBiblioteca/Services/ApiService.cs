@@ -22,10 +22,13 @@ namespace WebBiblioteca.Services
             var content = new StringContent(json, Encoding.UTF8, "application/json");
 
             var response = await _httpClient.PostAsync($"{_apiUrl}/Usuarios/Login", content);
+
+            var responseBody = await response.Content.ReadAsStringAsync();
+            Console.WriteLine($"🔹 Respuesta de la API: {responseBody}"); 
+
             if (response.IsSuccessStatusCode)
             {
-                var token = await response.Content.ReadAsStringAsync();
-                return token; // Devuelve el JWT
+                return responseBody; // Devuelve el JWT
             }
             return null;
         }
