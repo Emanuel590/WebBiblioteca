@@ -12,6 +12,7 @@
                 <thead>
                     <tr class="text-center">
                         <th scope="col">#</th>
+                        <th scope="col">foto</th>
                         <th scope="col">Titulo</th>
                         <th scope="col">Stock</th>
                         <th scope="col">Precio Alquiler</th>
@@ -48,7 +49,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form method="POST" id="AutoresAgregar">
+                <form method="POST" id="LibrosAgregar">
                     <div class="mb-3">
                         <label for="titulo" class="form-label">Titulo del libro</label>
                         <input type="text" class="form-control" id="titulo" placeholder="Ingrese el titulo del libro">
@@ -74,6 +75,12 @@
                         <select class="form-select" id="GeneroOption" aria-label="Default select example">
                         </select>
                     </div>
+
+                    <div class="mb-3">
+                        <label for="formFile" class="form-label">Default file input example</label>
+                        <input class="form-control" id="foto" type="file" id="formFile">
+                    </div>
+
 
                     <div class="text-center">
                         <button type="submit" class="btn border-0" style="background-color: #F25835; border: #ffff; outline: none !important; box-shadow: none !important;"><h5 class="text-white fw-bold"><i class="fa-solid fa-square-check  px-2"></i>Agregar</h5></button>
