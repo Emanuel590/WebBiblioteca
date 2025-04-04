@@ -1,0 +1,10 @@
+﻿
+.img-scale
+{
+    transition: transform 0.3s ease;
+}
+
+.img-scale:hover {
+    transform: scale(1.05);
+}
+

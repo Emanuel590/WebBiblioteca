@@ -121,7 +121,7 @@ function cargarGenerosNavbar() {
             $.each(rowFiltered, function (_, genero) {
                 const row = `
 
-                     <li class="item-dropdown"><a class="dropdown-item" href="/GenerosAdmin/${genero.id_Genero}">${genero.nombre}</a></li>
+                     <li class="item-dropdown"><a class="dropdown-item" href="/Genero/${genero.id_Genero}">${genero.nombre}</a></li>
                      
                 `
                 ul.append(row);

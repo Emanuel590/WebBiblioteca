@@ -1,15 +1,11 @@
-﻿@page 
-@model WebBiblioteca.Pages.LibrosModel
+﻿@page "{idGenero}"
+@model WebBiblioteca.Pages.GeneroModel
 @{
-
-	ViewData["Title"] = "Libros";
-
+    ViewData["Title"] = "GeneroId";
 }
-<head>
-    <link href="~/css/Libro.css" rel="stylesheet" />
-</head>
 
-<div class="container my-5">
+
+<div class="container  my-5" id="ContenedorgeneroPorId">
 
     <div class="d-flex justify-content-between align-items-center flex-wrap mb-4">
         <div>
@@ -18,7 +14,7 @@
         </div>
         <div class="d-flex align-items-center mt-3 mt-md-0">
             <label for="ordenar" class="me-2 fw-semibold">Ordenar por:</label>
-            <select id="ordenar" class="form-select w-auto" onchange="ordenarLibro()">
+            <select id="ordenar" class="form-select w-auto" >
                 <option value="seleccion">libros</option>
                 <option value="precio_menor">Precio menor</option>
                 <option value="precio_mayor">Precio mayor</option>
@@ -28,19 +24,32 @@
     </div>
 
 
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-4" id="librosMostrar">
+    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-4" id="librosMostrarId">
 
-
-        </div>
-
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-4" id="librosMayor">
     </div>
 
-    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-4" id="librosMenor">
-    </div>
+
 
 </div>
 
 
+
+
+
+
+
+
+
+
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="~/js/Libros.js"></script>
+
+@section Scripts {
+	<script src="~/js/Generos.js"></script>
+	<script src="~/js/Libros.js"></script>
+
+	<script>
+		const generoId = @Model.IdGenero;
+		libroPorGenero(generoId);
+	</script>
+}
