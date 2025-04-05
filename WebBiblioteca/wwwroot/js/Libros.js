@@ -392,15 +392,15 @@ function mostrarLibro(id) {
         url: `https://localhost:7003/api/Libros/${id}`,
         method: 'GET',
         success: function (libro) {
-
             $.get(`https://localhost:7003/api/Autores/${libro.id_Autor}`, function (autor) {
-
                 $.get(`https://localhost:7003/api/Generos/${libro.id_Genero}`, function (genero) {
 
-                    const contenedor = $('#contenedorLibro')
+                    const contenedor = $('#contenedorLibro');
+
+                    contenedor.empty(); 
 
                     contenedor.append(
-`
+                        `
                         <div class="row">
                             <div class="col-md-4 text-center">
                                 <img src="${libro.fotoPath}" class="img-fluid" style="max-height: 300px;" alt="Portada">
@@ -410,21 +410,24 @@ function mostrarLibro(id) {
                                 <p><strong>Autor:</strong> ${autor.nombre}</p>
                                 <p><strong>Género:</strong> ${genero.nombre}</p>
                                 <p><strong>Precio alquiler:</strong> ₡${libro.precio_alquiler}</p>
-                                 <div class="mb-3"> 
-                                    <button class="btn mt-3" style="background-color: #F25835; border: none; color: white;"><i class="fa-solid fa-book-open"></i> Comprar</button>
+                                <div class="mb-3"> 
+                                    <button class="btn mt-3" style="background-color: #F25835; border: none; color: white;">
+                                        <i class="fa-solid fa-book-open"></i> Comprar
+                                    </button>
                                 </div>
-                             </div>
-
-
-                             
-
-
-                        
-                              
+                            </div>
                         </div>
-                    `
-                    )
 
+                        <hr>
+
+                        <!-- Contenedor para las reseñas -->
+                        <h4>Reseñas</h4>
+                        <div id="contenedorResenas"></div>
+`
+                    );
+
+        
+                    mostrarResenasPorLibro(libro.id_libro);
 
                 }).fail(() => {
                     $('#contenedorLibro').html('<p class="text-danger">Error al cargar el género</p>');
@@ -439,8 +442,59 @@ function mostrarLibro(id) {
     });
 }
 
+function mostrarResenasPorLibro(idLibro) {
+    $.ajax({
+        url: "https://localhost:7003/api/Resenas",
+        method: "GET",
+        dataType: "json",
+        success: function (resenas) {
+            
+            const resenasDelLibro = resenas.filter(r => r.id_Libro === idLibro);
+            const contenedor = $("#contenedorResenas");
+            contenedor.empty();
 
+            if (resenasDelLibro.length === 0) {
+                contenedor.append("<p>No hay reseñas para este libro.</p>");
+                return;
+            }
 
+            
+            $.each(resenasDelLibro, function (_, resena) {
+                $.ajax({
+                    url: `https://localhost:7003/api/Usuarios/${resena.id_Usuario}`,
+                    method: "GET",
+                    dataType: "json",
+                    success: function (usuario) {
+                        const cardResena = `
+                            <div class="card my-3">
+                                <div class="card-body">
+                                    <p class="card-text"><strong>${usuario.nombre}</strong></p>
+                                    <p class="card-text">${resena.resena}</p>
+                                </div>
+                            </div>
+                        `;
+                        contenedor.append(cardResena);
+                    },
+                    error: function () {
+                        const cardResena = `
+                            <div class="card my-3">
+                                <div class="card-body">
+                                    <p class="card-text"><strong>Usuario desconocido</strong></p>
+                                    <p class="card-text">${resena.resena}</p>
+                                </div>
+                            </div>
+                        `;
+                        contenedor.append(cardResena);
+                    }
+                });
+            });
+        },
+        error: function (xhr, status, error) {
+            console.log("ERROR:", error, xhr, status);
+            $("#contenedorResenas").html('<p class="text-danger">Error al cargar las reseñas.</p>');
+        }
+    });
+}
 
 
 function ordenarLibro()

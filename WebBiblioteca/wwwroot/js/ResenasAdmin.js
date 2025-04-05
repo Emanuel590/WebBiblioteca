@@ -42,10 +42,16 @@ function cargarLibros() {
 }
 
 function cargarUsuarios() {
+    const token = localStorage.getItem("AuthToken");
+
     $.ajax({
         type: "GET",
         url: "https://localhost:7003/api/Usuarios",
         dataType: "json",
+
+        headers: {
+            'Authorization': 'Bearer ' + token
+        },
         success: function (response) {
             const usuariosFiltrados = response.filter(usuario => usuario.id_estado == 1);
             $.each(usuariosFiltrados, function (_, usuario) {
