@@ -53,6 +53,7 @@ function cargarPerfilUsuario() {
     });
 }
 
+
 function mostrarListaUsuariosAdmin(listaUsuarios, emailUsuario) {
     var usuarioAdmin = listaUsuarios.find(u => u.email === emailUsuario && u.id_role === 1);
 
@@ -62,59 +63,358 @@ function mostrarListaUsuariosAdmin(listaUsuarios, emailUsuario) {
     }
 
     var html = `
-        <div class="card mb-4">
-            <div class="card-header text-center" style="background-color: #F2A172;">
-                <h3>Panel de Administración</h3>
-            </div>
-            <div class="card-body">
-                <h5><strong>Mi Perfil:</strong></h5>
-                <p><strong>Nombre:</strong> ${usuarioAdmin.nombre}</p>
-                <p><strong>Email:</strong> ${usuarioAdmin.email}</p>
-                <p><strong>Código Postal:</strong> ${usuarioAdmin.codigo_postal || 'No disponible'}</p>
-                <p><strong>Teléfono:</strong> ${usuarioAdmin.telefono}</p>
-                <p><strong>Cédula:</strong> ${usuarioAdmin.cedula}</p>
-                <button class="btn btn-success" onclick="crearUsuario()">Crear Usuario</button>
-                <button class="btn btn-warning" onclick="editarUsuario(${usuarioAdmin.id_usuario})">Editar Mi Información</button>
+        <style>
+            body {
+                margin-top: 20px;
+                color: #1a202c;
+                text-align: left;
+                background-color: #f3e5f5; /* Morado claro */
+            }
+            .main-body {
+                padding: 15px;
+            }
+            .card {
+                box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+                margin-bottom: 20px;
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                min-width: 0;
+                word-wrap: break-word;
+                background-color: #fff;
+                background-clip: border-box;
+                border: 0;
+                border-radius: .25rem;
+            }
+            .card-body {
+                padding: 1rem;
+            }
+            .gutters-sm {
+                margin-right: -8px;
+                margin-left: -8px;
+            }
+            .gutters-sm > .col, .gutters-sm > [class*=col-] {
+                padding-right: 8px;
+                padding-left: 8px;
+            }
+            .mb-3, .my-3 {
+                margin-bottom: 1rem!important;
+            }
+            .bg-gray-300 {
+                background-color: #e2e8f0;
+            }
+            .h-100 {
+                height: 100%!important;
+            }
+            .shadow-none {
+                box-shadow: none!important;
+            }
+            /* Botón de edición */
+            .btn-edit {
+                background-color: #FFA500; /* Naranja */
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+            }
+            .btn-edit:hover {
+                background-color: #FF8C00; /* Naranja más oscuro */
+                color: white;
+            }
+            /* Botón de borrar */
+            .btn-danger {
+                background-color: #dc3545;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+            }
+            .btn-danger:hover {
+                background-color: #c82333;
+                color: white;
+            }
+            .demo { font-family: 'Noto Sans', sans-serif; }
+            .panel {
+                background: linear-gradient(to right, #2980b9, #2c3e50);
+                padding: 0;
+                border-radius: 10px;
+                border: none;
+                box-shadow: 0 0 0 5px rgba(0,0,0,0.05), 0 0 0 10px rgba(0,0,0,0.05);
+                margin-bottom: 20px;
+            }
+            .panel .panel-heading {
+                padding: 20px 15px;
+                border-radius: 10px 10px 0 0;
+                margin: 0;
+            }
+            .panel .panel-heading .title {
+                color: #fff;
+                font-size: 28px;
+                font-weight: 500;
+                text-transform: capitalize;
+                line-height: 40px;
+                margin: 0;
+            }
+            .panel .panel-body { 
+                padding: 15px;
+            }
+            .panel .panel-body .table {
+                width: 100%;
+                margin: 0 auto;
+                border-collapse: collapse;
+            }
+            .panel .panel-body .table thead tr th {
+                color: #fff;
+                background-color: rgba(255, 255, 255, 0.2);
+                font-size: 16px;
+                font-weight: 500;
+                text-transform: uppercase;
+                padding: 12px;
+                border: none;
+            }
+            .panel .panel-body .table tbody tr td {
+                color: #fff;
+                font-size: 15px;
+                padding: 10px 12px;
+                vertical-align: middle;
+                border: none;
+            }
+            .panel .panel-body .table tbody tr:nth-child(even) { 
+                background-color: rgba(255,255,255,0.05); 
+            }
+            .panel .panel-body .table tbody .action-list {
+                padding: 0;
+                margin: 0;
+                list-style: none;
+            }
+            .panel .panel-body .table tbody .action-list li {
+                display: inline-block;
+                margin: 0 5px;
+            }
+            .panel .panel-body .table tbody .action-list li a {
+                color: #fff;
+                font-size: 15px;
+                position: relative;
+                z-index: 1;
+                transition: all 0.3s ease 0s;
+            }
+            .panel .panel-body .table tbody .action-list li a:hover { 
+                text-shadow: 3px 3px 0 rgba(255,255,255,0.3); 
+            }
+            .panel .panel-footer {
+                color: #fff;
+                background-color: transparent;
+                padding: 15px;
+                border: none;
+            }
+            .panel .panel-footer .col { 
+                line-height: 35px; 
+            }
+            .pagination { margin: 0; }
+            .pagination li a {
+                color: #fff;
+                background-color: transparent;
+                border: 2px solid transparent;
+                font-size: 18px;
+                font-weight: 500;
+                text-align: center;
+                line-height: 31px;
+                width: 35px;
+                height: 35px;
+                padding: 0;
+                margin: 0 3px;
+                border-radius: 50px;
+                transition: all 0.3s ease 0s;
+            }
+            .pagination li a:hover {
+                color: #fff;
+                background-color: transparent;
+                border-color: rgba(255,255,255,0.2);
+            }
+            .pagination li a:focus,
+            .pagination li.active a,
+            .pagination li.active a:hover {
+                color: #fff;
+                background-color: transparent;
+                border-color: #fff;
+            }
+            .pagination li:first-child a,
+            .pagination li:last-child a {
+                border-radius: 50%;
+            }
+            @media only screen and (max-width:767px) {
+                .panel .panel-heading .title {
+                    text-align: center;
+                    margin: 0 0 10px;
+                }
+                .panel .panel-heading .btn_group { 
+                    text-align: center; 
+                }
+            }
+        </style>
+
+        <div class="container">
+            <div class="main-body">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" class="main-breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/Index">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Administrador</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Perfil de Administrador</li>
+                    </ol>
+                </nav>
+                <!-- /Breadcrumb -->
+
+                <div class="row gutters-sm">
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex flex-column align-items-center text-center">
+                                    <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Profile Image" class="rounded-circle" width="150">
+                                    <div class="mt-3">
+                                        <h4>${usuarioAdmin.nombre}</h4>
+                                        <p class="text-secondary mb-1">Administrador</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-8">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <h6 class="mb-0">Email</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+                                        ${usuarioAdmin.email}
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <h6 class="mb-0">Teléfono</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+                                        ${usuarioAdmin.telefono}
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <h6 class="mb-0">Cédula</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+                                        ${usuarioAdmin.cedula}
+                                    </div>
+                                </div>
+                                <hr>
+                                <!-- Sección Código Postal -->
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <h6 class="mb-0">Código Postal</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+                                        <p class="text-muted font-size-sm">${usuarioAdmin.codigo_postal || 'No disponible'}</p>
+                                    </div>
+                                </div>
+                                <hr>
+                                <!-- Botones de acción -->
+                                <div class="row">
+                                    <div class="col-sm-12 text-center">
+                                        <button class="btn btn-success" onclick="location.href='/CreateEmpleado'">Crear Usuario Empleado</button>
+                                        <button class="btn btn-edit" onclick="editarUsuario(${usuarioAdmin.id_usuario})">Editar Mi Información</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="card mb-4">
-            <div class="card-header text-center" style="background-color: #F2A172;">
-                <h4>Lista de Empleados y Clientes</h4>
-            </div>
-            <div class="card-body">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr><th>ID</th><th>Nombre</th><th>Email</th><th>Rol</th><th>Acciones</th></tr>
-                    </thead>
-                    <tbody>`;
-
+        <div class="container demo">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col col-sm-3 col-xs-12">
+                                    <h4 class="title">Lista de Usuarios</h4>
+                                </div>
+                                <div class="col-sm-9 col-xs-12 text-right">
+                                    <!-- Controles opcionales -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-body table-responsive">
+                           <table class="table" style="width: 100%; margin: 0 auto;">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nombre</th>
+                                        <th>Email</th>
+                                        <th>Rol</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
     var usuarios = listaUsuarios.filter(u => u.id_role === 2 || u.id_role === 3);
     usuarios.forEach(function (u) {
         var rolText = u.id_role === 2 ? 'Cliente' : 'Empleado';
         html += `
-            <tr>
-                <td>${u.id_usuario}</td>
-                <td>${u.nombre}</td>
-                <td>${u.email}</td>
-                <td>${rolText}</td>
-                <td>
-                    <button class="btn btn-warning btn-sm" onclick="editarUsuario(${u.id_usuario})">Editar</button>
-                    <button class="btn btn-danger btn-sm" onclick="confirmarEliminarUsuario(${u.id_usuario})">Borrar</button>
-
-                </td>
-            </tr>`;
+                                    <tr>
+                                        <td>${u.id_usuario}</td>
+                                        <td>${u.nombre}</td>
+                                        <td>${u.email}</td>
+                                        <td>${rolText}</td>
+                                        <td>
+                                            <ul class="action-list">
+                                                <li>
+                                                    <a href="#" data-tip="edit" onclick="editarUsuario(${u.id_usuario})">
+                                                        <i class="fa fa-edit"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" data-tip="delete" onclick="confirmarEliminarUsuario(${u.id_usuario})">
+                                                        <i class="fa fa-trash"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>`;
     });
-
     html += `
-                    </tbody>
-                </table>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="panel-footer">
+                            <div class="row">
+                                <div class="col col-sm-6 col-xs-6">showing <b>5</b> out of <b>25</b> entries</div>
+                                <div class="col-sm-6 col-xs-6">
+                                    <ul class="pagination hidden-xs pull-right">
+                                        <li><a href="#"><</a></li>
+                                        <li class="active"><a href="#">1</a></li>
+                                        <li><a href="#">2</a></li>
+                                        <li><a href="#">3</a></li>
+                                        <li><a href="#">4</a></li>
+                                        <li><a href="#">5</a></li>
+                                        <li><a href="#">></a></li>
+                                    </ul>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     `;
-
     $('#perfilUsuario').html(html);
 }
+
+
 
 function mostrarListaUsuariosEmpleado(listaUsuarios, emailUsuario) {
     var empleado = listaUsuarios.find(u => u.email === emailUsuario && u.id_role === 3);
@@ -125,73 +425,551 @@ function mostrarListaUsuariosEmpleado(listaUsuarios, emailUsuario) {
     }
 
     var html = `
-        <div class="card mb-4">
-            <div class="card-header text-center" style="background-color: #F2A172;">
-                <h3>Panel de Empleado</h3>
-            </div>
-            <div class="card-body">
-                <p><strong>Nombre:</strong> ${empleado.nombre}</p>
-                <p><strong>Email:</strong> ${empleado.email}</p>
-                <p><strong>Código Postal:</strong> ${empleado.codigo_postal || 'No disponible'}</p>
-                <p><strong>Teléfono:</strong> ${empleado.telefono}</p>
-                <p><strong>Cédula:</strong> ${empleado.cedula}</p>
-                <button class="btn btn-warning" onclick="editarUsuario()">Editar Mi Información</button>
+        <style>
+            body {
+                margin-top: 20px;
+                color: #1a202c;
+                text-align: left;
+                background-color: #f3e5f5; /* Morado claro */
+            }
+            .main-body {
+                padding: 15px;
+            }
+            .card {
+                box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+                margin-bottom: 20px; /* Espacio uniforme entre tarjetas */
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                min-width: 0;
+                word-wrap: break-word;
+                background-color: #fff;
+                background-clip: border-box;
+                border: 0;
+                border-radius: .25rem;
+            }
+            .card-body {
+                padding: 1rem;
+            }
+            .gutters-sm {
+                margin-right: -8px;
+                margin-left: -8px;
+            }
+            .gutters-sm > .col, .gutters-sm > [class*=col-] {
+                padding-right: 8px;
+                padding-left: 8px;
+            }
+            .mb-3, .my-3 {
+                margin-bottom: 1rem!important;
+            }
+            .bg-gray-300 {
+                background-color: #e2e8f0;
+            }
+            .h-100 {
+                height: 100%!important;
+            }
+            .shadow-none {
+                box-shadow: none!important;
+            }
+            /* Botón naranja */
+            .btn-edit {
+                background-color: #FFA500; /* Naranja */
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 4px;
+            }
+            .btn-edit:hover {
+                background-color: #FF8C00; /* Naranja más oscuro */
+                color: white;
+            }
+            .demo { font-family: 'Noto Sans', sans-serif; }
+            .panel {
+                background: linear-gradient(to right, #2980b9, #2c3e50);
+                padding: 0;
+                border-radius: 10px;
+                border: none;
+                box-shadow: 0 0 0 5px rgba(0,0,0,0.05), 0 0 0 10px rgba(0,0,0,0.05);
+                margin-bottom: 20px;
+            }
+            .panel .panel-heading {
+                padding: 20px 15px;
+                border-radius: 10px 10px 0 0;
+                margin: 0;
+            }
+            .panel .panel-heading .title {
+                color: #fff;
+                font-size: 28px;
+                font-weight: 500;
+                text-transform: capitalize;
+                line-height: 40px;
+                margin: 0;
+            }
+            .panel .panel-heading .btn {
+                color: rgba(255,255,255,0.5);
+                background: transparent;
+                font-size: 16px;
+                text-transform: capitalize;
+                border: 2px solid #fff;
+                border-radius: 50px;
+                transition: all 0.3s ease 0s;
+            }
+            .panel .panel-heading .btn:hover {
+                color: #fff;
+                text-shadow: 3px 3px rgba(255,255,255,0.2);
+            }
+            .panel .panel-heading .form-control {
+                color: #fff;
+                background-color: transparent;
+                width: 35%;
+                height: 40px;
+                border: 2px solid #fff;
+                border-radius: 20px;
+                display: inline-block;
+                transition: all 0.3s ease 0s;
+            }
+            .panel .panel-heading .form-control:focus {
+                background-color: rgba(255,255,255,0.2);
+                box-shadow: none;
+                outline: none;
+            }
+            .panel .panel-heading .form-control::placeholder {
+                color: rgba(255,255,255,0.5);
+                font-size: 15px;
+                font-weight: 500;
+            }
+            .panel .panel-body { 
+                padding: 15px; /* Ajuste para mayor simetría */
+            }
+            .panel .panel-body .table {
+                width: 100%;
+                margin: 0 auto;
+                border-collapse: collapse;
+            }
+            .panel .panel-body .table thead tr th {
+                color: #fff;
+                background-color: rgba(255, 255, 255, 0.2);
+                font-size: 16px;
+                font-weight: 500;
+                text-transform: uppercase;
+                padding: 12px;
+                border: none;
+            }
+            .panel .panel-body .table tbody tr td {
+                color: #fff;
+                font-size: 15px;
+                padding: 10px 12px;
+                vertical-align: middle;
+                border: none;
+            }
+            .panel .panel-body .table tbody tr:nth-child(even) { 
+                background-color: rgba(255,255,255,0.05); 
+            }
+            .panel .panel-body .table tbody .action-list {
+                padding: 0;
+                margin: 0;
+                list-style: none;
+            }
+            .panel .panel-body .table tbody .action-list li {
+                display: inline-block;
+                margin: 0 5px;
+            }
+            .panel .panel-body .table tbody .action-list li a {
+                color: #fff;
+                font-size: 15px;
+                position: relative;
+                z-index: 1;
+                transition: all 0.3s ease 0s;
+            }
+            .panel .panel-body .table tbody .action-list li a:hover { 
+                text-shadow: 3px 3px 0 rgba(255,255,255,0.3); 
+            }
+            .panel .panel-body .table tbody .action-list li a:before,
+            .panel .panel-body .table tbody .action-list li a:after {
+                content: attr(data-tip);
+                color: #fff;
+                background-color: #111;
+                font-size: 12px;
+                padding: 5px 7px;
+                border-radius: 4px;
+                text-transform: capitalize;
+                display: none;
+                transform: translateX(-50%);
+                position: absolute;
+                left: 50%;
+                top: -32px;
+                transition: all 0.3s ease 0s;
+            }
+            .panel .panel-body .table tbody .action-list li a:after {
+                content: '';
+                height: 15px;
+                width: 15px;
+                padding: 0;
+                border-radius: 0;
+                transform: translateX(-50%) rotate(45deg);
+                top: -18px;
+                z-index: -1;
+            }
+            .panel .panel-body .table tbody .action-list li a:hover:before,
+            .panel .panel-body .table tbody .action-list li a:hover:after {
+                display: block;
+            }
+            .panel .panel-footer {
+                color: #fff;
+                background-color: transparent;
+                padding: 15px;
+                border: none;
+            }
+            .panel .panel-footer .col { 
+                line-height: 35px; 
+            }
+            .pagination { margin: 0; }
+            .pagination li a {
+                color: #fff;
+                background-color: transparent;
+                border: 2px solid transparent;
+                font-size: 18px;
+                font-weight: 500;
+                text-align: center;
+                line-height: 31px;
+                width: 35px;
+                height: 35px;
+                padding: 0;
+                margin: 0 3px;
+                border-radius: 50px;
+                transition: all 0.3s ease 0s;
+            }
+            .pagination li a:hover {
+                color: #fff;
+                background-color: transparent;
+                border-color: rgba(255,255,255,0.2);
+            }
+            .pagination li a:focus,
+            .pagination li.active a,
+            .pagination li.active a:hover {
+                color: #fff;
+                background-color: transparent;
+                border-color: #fff;
+            }
+            .pagination li:first-child a,
+            .pagination li:last-child a {
+                border-radius: 50%;
+            }
+            @media only screen and (max-width:767px) {
+                .panel .panel-heading .title {
+                    text-align: center;
+                    margin: 0 0 10px;
+                }
+                .panel .panel-heading .btn_group { 
+                    text-align: center; 
+                }
+            }
+        </style>
+
+        <div class="container">
+            <div class="main-body">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" class="main-breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/Index">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Empleado</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Perfil de Empleado</li>
+                    </ol>
+                </nav>
+                <!-- /Breadcrumb -->
+
+                <div class="row gutters-sm">
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex flex-column align-items-center text-center">
+                                    <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Profile Image" class="rounded-circle" width="150">
+                                    <div class="mt-3">
+                                        <h4>${empleado.nombre}</h4>
+                                        <p class="text-secondary mb-1">Empleado</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-8">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <h6 class="mb-0">Email</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+                                        ${empleado.email}
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <h6 class="mb-0">Teléfono</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+                                        ${empleado.telefono}
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <h6 class="mb-0">Cédula</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+                                        ${empleado.cedula}
+                                    </div>
+                                </div>
+                                <hr>
+                                <!-- Sección Código Postal -->
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <h6 class="mb-0">Código Postal</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+                                        <p class="text-muted font-size-sm">${empleado.codigo_postal || 'Ubicación no disponible'}</p>
+                                    </div>
+                                </div>
+                                <hr>
+                                <!-- Botón de editar -->
+                                <div class="row">
+                                    <div class="col-sm-12 text-center">
+                                        <button class="btn btn-edit" onclick="editarUsuario(${empleado.id_usuario})">Editar Mi Información</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="card mb-4">
-            <div class="card-header text-center" style="background-color: #F2A172;">
-                <h4>Lista de Clientes</h4>
-            </div>
-            <div class="card-body">
-                <table class="table table-bordered">
-                    <thead>
-                        <tr><th>ID</th><th>Nombre</th><th>Email</th><th>Acción</th></tr>
-                    </thead>
-                    <tbody>`;
-
+        <div class="container demo">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col col-sm-3 col-xs-12">
+                                    <h4 class="title">Lista de Clientes</h4>
+                                </div>
+                                <div class="col-sm-9 col-xs-12 text-right">
+                                    <!-- Controles opcionales -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="panel-body table-responsive">
+                           <table class="table" style="width: 100%; margin: 0 auto;">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Nombre</th>
+                                        <th>Email</th>
+                                        <th>Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
     var clientes = listaUsuarios.filter(u => u.id_role === 2);
     clientes.forEach(function (u) {
         html += `
-            <tr>
-                <td>${u.id_usuario}</td>
-                <td>${u.nombre}</td>
-                <td>${u.email}</td>
-                <td>
-                    <button class="btn btn-warning btn-sm" onclick="editarUsuario(${u.id_usuario})">Editar</button>
-                </td>
-            </tr>`;
+                                    <tr>
+                                        <td>${u.id_usuario}</td>
+                                        <td>${u.nombre}</td>
+                                        <td>${u.email}</td>
+                                        <td>
+                                            <ul class="action-list">
+                                                <li>
+                                                    <a href="#" data-tip="edit" onclick="editarUsuario(${u.id_usuario})">
+                                                        <i class="fa fa-edit"></i>
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="#" data-tip="delete" onclick="confirmarEliminarUsuario(${u.id_usuario})">
+                                                        <i class="fa fa-trash"></i>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </td>
+                                    </tr>`;
     });
-
     html += `
-                    </tbody>
-                </table>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="panel-footer">
+                            <div class="row">
+                                <div class="col col-sm-6 col-xs-6">showing <b>5</b> out of <b>25</b> entries</div>
+                                <div class="col-sm-6 col-xs-6">
+                                    <ul class="pagination hidden-xs pull-right">
+                                        <li><a href="#"><</a></li>
+                                        <li class="active"><a href="#">1</a></li>
+                                        <li><a href="#">2</a></li>
+                                        <li><a href="#">3</a></li>
+                                        <li><a href="#">4</a></li>
+                                        <li><a href="#">5</a></li>
+                                        <li><a href="#">></a></li>
+                                    </ul>
+                                    
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     `;
-
     $('#perfilUsuario').html(html);
 }
+
 
 function mostrarPerfilCliente(cliente) {
     var html = `
-        <div class="card mb-4">
-            <div class="card-header text-center" style="background-color: #F2A172;">
-                <h3>Perfil de Cliente</h3>
-            </div>
-            <div class="card-body">
-                <p><strong>Nombre:</strong> ${cliente.nombre}</p>
-                <p><strong>Email:</strong> ${cliente.email}</p>
-                <p><strong>Código Postal:</strong> ${cliente.codigo_postal || 'No disponible'}</p>
-                <p><strong>Teléfono:</strong> ${cliente.telefono}</p>
-                <p><strong>Cédula:</strong> ${cliente.cedula}</p>
-                <button class="btn btn-warning" onclick="editarUsuario(${cliente.id_usuario})">Editar Mi Información</button>
+        <style>
+            body {
+                margin-top: 20px;
+                color: #1a202c;
+                text-align: left;
+                background-color: #f3e5f5; /* Morado claro */
+            }
+            .main-body {
+                padding: 15px;
+            }
+            .card {
+                box-shadow: 0 1px 3px 0 rgba(0,0,0,.1), 0 1px 2px 0 rgba(0,0,0,.06);
+            }
+            .card {
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                min-width: 0;
+                word-wrap: break-word;
+                background-color: #fff;
+                background-clip: border-box;
+                border: 0 solid rgba(0,0,0,.125);
+                border-radius: .25rem;
+            }
+            .card-body {
+                flex: 1 1 auto;
+                min-height: 1px;
+                padding: 1rem;
+            }
+            .gutters-sm {
+                margin-right: -8px;
+                margin-left: -8px;
+            }
+            .gutters-sm > .col, .gutters-sm > [class*=col-] {
+                padding-right: 8px;
+                padding-left: 8px;
+            }
+            .mb-3, .my-3 {
+                margin-bottom: 1rem!important;
+            }
+            .bg-gray-300 {
+                background-color: #e2e8f0;
+            }
+            .h-100 {
+                height: 100%!important;
+            }
+            .shadow-none {
+                box-shadow: none!important;
+            }
+           
+            .btn-edit {
+                background-color: #FFA500;
+                color: white;
+                border: none;
+            }
+            .btn-edit:hover {
+                background-color: #FF8C00; 
+                color: white;
+            }
+        </style>
+
+        <div class="container">
+            <div class="main-body">
+                <!-- Breadcrumb -->
+                <nav aria-label="breadcrumb" class="main-breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="/Index">Inicio</a></li>
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">Usuario</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Usuario Perfil</li>
+                    </ol>
+                </nav>
+                <!-- /Breadcrumb -->
+                
+                <div class="row gutters-sm">
+                    <div class="col-md-4 mb-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex flex-column align-items-center text-center">
+                                    <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Profile Image" class="rounded-circle" width="150">
+                                    <div class="mt-3">
+                                        <h4>${cliente.nombre}</h4>
+                                        <p class="text-secondary mb-1">Cliente</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-8">
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <h6 class="mb-0">Email</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+                                        ${cliente.email}
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <h6 class="mb-0">Teléfono</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+                                        ${cliente.telefono}
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <h6 class="mb-0">Cédula</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+                                        ${cliente.cedula}
+                                    </div>
+                                </div>
+                                <hr>
+
+                                <div class="row">
+                                    <div class="col-sm-3">
+                                        <h6 class="mb-0">Código Postal</h6>
+                                    </div>
+                                    <div class="col-sm-9 text-secondary">
+                                        <p class="text-muted font-size-sm">${cliente.codigo_postal || 'Ubicación no disponible'}</p>
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-sm-12 text-center">
+                                        <button class="btn btn-edit" onclick="editarUsuario(${cliente.id_usuario})">Editar Mi Información</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     `;
 
     $('#perfilUsuario').html(html);
 }
+
 
 function crearUsuario() {
     alert('Funcionalidad para crear un nuevo usuario.');

@@ -6,6 +6,7 @@ using WebBiblioteca.Models;
 using WebBiblioteca.Services;
 using Newtonsoft.Json.Linq;
 using Microsoft.AspNetCore.Http;
+using System;
 
 namespace WebBiblioteca.Pages
 {
@@ -40,13 +41,16 @@ namespace WebBiblioteca.Pages
 
                 var jsonResponse = JObject.Parse(responseBody); 
                 var token = jsonResponse["token"]?.ToString();
+                var role = jsonResponse["usuario"]?["id_role"]?.ToObject<int>();
 
-                if (!string.IsNullOrEmpty(token))
+
+                if (!string.IsNullOrEmpty(token) && role != null)
                 {
-                    HttpContext.Session.SetString("AuthToken", token); 
+                    HttpContext.Session.SetString("AuthToken", token);
+                    HttpContext.Session.SetInt32("UserRole", role.Value);
                     Console.WriteLine($" Token guardado en sesión: {HttpContext.Session.GetString("AuthToken")}");
 
-                    return new JsonResult(new { success = true, token, email = Input.Email });
+                    return new JsonResult(new { success = true, token, email = Input.Email, role = role.Value});
                 }
             }
 

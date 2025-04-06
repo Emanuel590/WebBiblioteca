@@ -7,6 +7,7 @@
     agregarGenerosALibros();
     agregarLibros();
     mostrarLibros();
+    ordenarLibro();
 })
 
 let autores = []
@@ -357,7 +358,7 @@ function mostrarLibros() {
         <div class="col mx-3">
             <div class="card border-0 h-100">
                 <a href="/Libro/${Libros.id_libro}" class="text-decoration-none text-center">
-                    <img src="${Libros.fotoPath}" alt="Portada" class="card-img-top" style="height: 220px; object-fit: contain;">
+                    <img src="${Libros.fotoPath}" alt="Portada" class="card-img-top img-scale " style="height: 220px; object-fit: contain;">
                 </a>
                 <div class="card-body px-0">
                     <h6 class="fw-semibold text-truncate" title="${Libros.titulo}">
@@ -384,20 +385,22 @@ function mostrarLibros() {
 
 }
 
+
+
 function mostrarLibro(id) {
     $.ajax({
         url: `https://localhost:7003/api/Libros/${id}`,
         method: 'GET',
         success: function (libro) {
-
             $.get(`https://localhost:7003/api/Autores/${libro.id_Autor}`, function (autor) {
-
                 $.get(`https://localhost:7003/api/Generos/${libro.id_Genero}`, function (genero) {
 
-                    const contenedor = $('#contenedorLibro')
+                    const contenedor = $('#contenedorLibro');
+
+                    contenedor.empty(); 
 
                     contenedor.append(
-`
+                        `
                         <div class="row">
                             <div class="col-md-4 text-center">
                                 <img src="${libro.fotoPath}" class="img-fluid" style="max-height: 300px;" alt="Portada">
@@ -407,18 +410,24 @@ function mostrarLibro(id) {
                                 <p><strong>Autor:</strong> ${autor.nombre}</p>
                                 <p><strong>Género:</strong> ${genero.nombre}</p>
                                 <p><strong>Precio alquiler:</strong> ₡${libro.precio_alquiler}</p>
-                             <button class="btn mt-3" style="background-color: #F25835; border: none; color: white;">Comprar</button>
-                             </div>
-
-                             
-
-
-                        
-                              
+                                <div class="mb-3"> 
+                                    <button class="btn mt-3" style="background-color: #F25835; border: none; color: white;">
+                                        <i class="fa-solid fa-book-open"></i> Comprar
+                                    </button>
+                                </div>
+                            </div>
                         </div>
-                    `
-                    )
 
+                        <hr>
+
+                        <!-- Contenedor para las reseñas -->
+                        <h4>Reseñas</h4>
+                        <div id="contenedorResenas"></div>
+`
+                    );
+
+        
+                    mostrarResenasPorLibro(libro.id_libro);
 
                 }).fail(() => {
                     $('#contenedorLibro').html('<p class="text-danger">Error al cargar el género</p>');
@@ -429,6 +438,268 @@ function mostrarLibro(id) {
         },
         error: function () {
             $('#contenedorLibro').html('<p class="text-danger">Error al cargar el libro</p>');
+        }
+    });
+}
+
+function mostrarResenasPorLibro(idLibro) {
+    $.ajax({
+        url: "https://localhost:7003/api/Resenas",
+        method: "GET",
+        dataType: "json",
+        success: function (resenas) {
+            
+            const resenasDelLibro = resenas.filter(r => r.id_Libro === idLibro);
+            const contenedor = $("#contenedorResenas");
+            contenedor.empty();
+
+            if (resenasDelLibro.length === 0) {
+                contenedor.append("<p>No hay reseñas para este libro.</p>");
+                return;
+            }
+
+            
+            $.each(resenasDelLibro, function (_, resena) {
+                $.ajax({
+                    url: `https://localhost:7003/api/Usuarios/${resena.id_Usuario}`,
+                    method: "GET",
+                    dataType: "json",
+                    success: function (usuario) {
+                        const cardResena = `
+                            <div class="card my-3">
+                                <div class="card-body">
+                                    <p class="card-text"><strong>${usuario.nombre}</strong></p>
+                                    <p class="card-text">${resena.resena}</p>
+                                </div>
+                            </div>
+                        `;
+                        contenedor.append(cardResena);
+                    },
+                    error: function () {
+                        const cardResena = `
+                            <div class="card my-3">
+                                <div class="card-body">
+                                    <p class="card-text"><strong>Usuario desconocido</strong></p>
+                                    <p class="card-text">${resena.resena}</p>
+                                </div>
+                            </div>
+                        `;
+                        contenedor.append(cardResena);
+                    }
+                });
+            });
+        },
+        error: function (xhr, status, error) {
+            console.log("ERROR:", error, xhr, status);
+            $("#contenedorResenas").html('<p class="text-danger">Error al cargar las reseñas.</p>');
+        }
+    });
+}
+
+
+function ordenarLibro()
+{
+    $.ajax({
+        type: "GET",
+        url: "https://localhost:7003/api/Libros",
+        dataType: "json",
+        success: function (response) {
+            const Ordenar = $('#ordenar').val();
+
+            if (Ordenar === "precio_mayor") {
+
+
+                    const librosMostrar = $('#librosMostrar');
+                    librosMostrar.hide();
+                    const librosMenor = $('#librosMenor')
+                    librosMenor.hide();
+                    const librosMayor = $('#librosMayor');
+                    librosMayor.show();
+                    mostrarLibrosMayor()
+
+
+            } else if (Ordenar == "precio_menor") {
+
+
+                    const librosMostrar = $('#librosMostrar');
+                    librosMostrar.hide();
+                    const librosMayor = $('#librosMayor');
+                    librosMayor.hide();
+                    const librosMenor = $('#librosMenor')
+                    librosMenor.show();
+                    mostrarLibrosMenor()
+
+            } else if (Ordenar == "seleccion") {
+
+                const librosMostrar = $('#librosMostrar');
+                librosMostrar.show();
+                const librosMenor = $('#librosMenor')
+                librosMenor.hide();
+                const librosMayor = $('#librosMayor');
+                librosMayor.hide();
+
+            }
+
+
+
+
+
+
+        },
+        error: function (xhr, status, error) {
+            console.log("ERROR:", error, xhr, status);
+        }
+    });
+
+
+
+
+}
+
+
+function mostrarLibrosMayor() {
+    $.ajax({
+        type: "GET",
+        url: "https://localhost:7003/api/Libros/MayorAMenor",
+        dataType: "json",
+        success: function (response) {
+            const carta = $('#librosMayor');
+            carta.empty();
+            $.each(response, function (_, Libros) {
+                const autorNombre = autores[Libros.id_Autor] || 'No definido'
+
+
+                const libro =
+                    `
+        <div class="col mx-3">
+            <div class="card border-0 h-100">
+                <a href="/Libro/${Libros.id_libro}" class="text-decoration-none text-center">
+                    <img src="${Libros.fotoPath}" alt="Portada" class="card-img-top img-scale " style="height: 220px; object-fit: contain;">
+                </a>
+                <div class="card-body px-0">
+                    <h6 class="fw-semibold text-truncate" title="${Libros.titulo}">
+                        ${Libros.titulo}
+                    </h6>
+                    <p class="text-muted small mb-1 text-uppercase">${autorNombre}</p>
+                    <p class="fw-semibold text-dark">₡${Libros.precio_alquiler}</p>
+                </div>
+
+            </div>
+
+
+                    `;
+                carta.append(libro);
+            });
+        },
+        error: function (xhr, status, error) {
+            console.log("ERROR:", error, xhr, status);
+        }
+    });
+
+
+
+
+}
+
+function mostrarLibrosMenor() {
+    $.ajax({
+        type: "GET",
+        url: "https://localhost:7003/api/Libros/MenorAMayor",
+        dataType: "json",
+        success: function (response) {
+            const carta = $('#librosMenor');
+            carta.empty();
+            $.each(response, function (_, Libros) {
+                const autorNombre = autores[Libros.id_Autor] || 'No definido'
+
+
+                const libro =
+                    `
+        <div class="col mx-3">
+            <div class="card border-0 h-100">
+                <a href="/Libro/${Libros.id_libro}" class="text-decoration-none text-center">
+                    <img src="${Libros.fotoPath}" alt="Portada" class="card-img-top img-scale " style="height: 220px; object-fit: contain;">
+                </a>
+                <div class="card-body px-0">
+                    <h6 class="fw-semibold text-truncate" title="${Libros.titulo}">
+                        ${Libros.titulo}
+                    </h6>
+                    <p class="text-muted small mb-1 text-uppercase">${autorNombre}</p>
+                    <p class="fw-semibold text-dark">₡${Libros.precio_alquiler}</p>
+                </div>
+
+            </div>
+
+
+                    `;
+                carta.append(libro);
+            });
+        },
+        error: function (xhr, status, error) {
+            console.log("ERROR:", error, xhr, status);
+        }
+    });
+
+
+
+
+}
+
+
+function libroPorGenero(idGenero) {
+    $.ajax({
+        type: "GET",
+        url: `https://localhost:7003/api/Libros/Genero/${idGenero}`,
+        dataType: "json",
+        success: function (response) {
+            const content = $('#ContenedorgeneroPorId')
+            const carta = $('#librosMostrarId');
+            carta.empty();
+
+
+            if (response.length === 0) {
+                content.append(`
+
+                <div class="text-center">
+                <p>No existen libros en este género aún.</p>
+                </div>`);
+                return;
+            }
+
+            $.each(response, function (_, libro) {
+                const autorNombre = autores[libro.id_Autor] || 'No definido';
+
+                const libroHTML = `
+                    <div class="col mx-3">
+                        <div class="card border-0 h-100">
+                            <a href="/Libro/${libro.id_libro}" class="text-decoration-none text-center">
+                                <img src="${libro.fotoPath}" alt="Portada" class="card-img-top img-scale" style="height: 220px; object-fit: contain;">
+                            </a>
+                            <div class="card-body px-0">
+                                <h6 class="fw-semibold text-truncate" title="${libro.titulo}">
+                                    ${libro.titulo}
+                                </h6>
+                                <p class="text-muted small mb-1 text-uppercase">${autorNombre}</p>
+                                <p class="fw-semibold text-dark">₡${libro.precio_alquiler}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                carta.append(libroHTML);
+            });
+        },
+        error: function (xhr, status, error) {
+            const carta = $('#librosMostrarId');
+            carta.empty();
+
+            // Si se obtiene un 404, se muestra el mensaje personalizado.
+            if (xhr.status === 404) {
+                carta.append(`<p>No existen libros en este género aún.</p>`);
+            } else {
+                // Para otros errores, muestra un mensaje genérico.
+                carta.append(`<p>Ocurrió un error al cargar los libros.</p>`);
+            }
+            console.log("ERROR:", error, xhr, status);
         }
     });
 }
