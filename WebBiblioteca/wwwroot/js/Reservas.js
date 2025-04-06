@@ -73,13 +73,14 @@ function cargarEstadosReserva() {
 }
 
 //-----por terminar pasar de int a string ---------//
+let LibrosAlm = 
 function cargarLibroReserva() {
     return $.ajax({
         type: "GET",
         url: "https://localhost:7003/api/Libros",
         dataType: "json",
         success: function (response) {
-            estadosAlm = response;
+            LibrosAlm = response;
         },
         error: function (xhr, status, error) {
             console.log("ERROR cargando estados:", error, xhr, status);
@@ -87,13 +88,15 @@ function cargarLibroReserva() {
     });
 }
 
+let UsuariosAlm = [];
+
 function cargarUsuariosReserva() {
     return $.ajax({
         type: "GET",
         url: "https://localhost:7003/api/Usuarios",
         dataType: "json",
         success: function (response) {
-            estadosAlm = response;
+            UsuariosAlm = response;
         },
         error: function (xhr, status, error) {
             console.log("ERROR cargando estados:", error, xhr, status);

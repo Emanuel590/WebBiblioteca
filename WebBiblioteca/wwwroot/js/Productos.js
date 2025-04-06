@@ -1,7 +1,32 @@
 ﻿$(document).ready(function () {
     cargarProductosTabla();
-
+    CategoriaCargar();
+    CategoriaSelect();
+    agregarProductoAdmin();
+    agregarCategoriaProductos();
+    mostrarProductos();
 });
+
+
+let categoriaP = [];
+function CategoriaCargar() {
+    $.ajax({
+        type: "GET",
+        url: "https://localhost:7003/api/Categorias",
+        dataType: "json",
+        success: function (response) {
+            $.each(response, function (_, categoria) {
+                categoriaP[categoria.id_Categoria] = categoria.nombre 
+            })
+
+            cargarProductosTabla();
+        },
+        error: function (xhr, status, error) {
+            console.log("ERROR:", error, xhr, status);
+        }
+    })
+}
+
 
 function cargarProductosTabla() {
     $.ajax({
@@ -12,12 +37,13 @@ function cargarProductosTabla() {
             const tabla = $('#tablaProductosAdmin tbody');
             tabla.empty();
             $.each(response, function (_, productoAdmin) {
+                const categoriaNombre = categoriaP[productoAdmin.id_categoria] || 'No definido'
                 const row = `
                 <tr>
                         <td>${productoAdmin.id_productos}</td>
                         <td>${productoAdmin.stock}</td>
                          <td>${productoAdmin.nombre}</td>
-                           <td>${productoAdmin.id_categoria}</td>                          
+                           <td>${categoriaNombre}</td>                          
                         <td>${productoAdmin.iD_ESTADO == 1 ?
                         `<span class="text-success">Activo</span>` :
                         `<span class="text-danger">Inactivo</span>`
@@ -32,7 +58,7 @@ function cargarProductosTabla() {
                             <i class="fa-solid fa-eye-slash"></i> Activar
                         </button>` }
 
-                        <button  data-bs-toggle="modal" data-bs-target="#exampleModal6" onclick="editarProducto(${productoAdmin.id_productos}, ${productoAdmin.stock}, '${productoAdmin.nombre}', ${productoAdmin.id_categoria}, ${productoAdmin.estado})" class="btn btn-primary rounded px-2 py-1">
+                        <button  data-bs-toggle="modal" data-bs-target="#exampleModal6" onclick="editarProducto(${productoAdmin.id_productos}, ${productoAdmin.stock}, '${productoAdmin.nombre}', ${productoAdmin.id_categoria}, ${productoAdmin.iD_ESTADO})" class="btn btn-primary rounded px-2 py-1">
                                   Editar
                                 </button >
                       
@@ -64,18 +90,12 @@ function editarProducto(idProductos, Stock, NombreP, idCategoriaP, estado) {
     $('#estado_EditarP').val(estado);
     CategoriaSelect();
 
-
-    setTimeout(() => {
-        $('#idCategoriaP_Editar').val(idCategoriaP);
-    }, 200);
-
-    $('#exampleModal6').modal('show');
 }
 
 $('#ActualizarFormP').on('submit', function (event) {
     event.preventDefault();
 
-    var datosP = {
+    var datos = {
         id_productos: $('#idProductos_Editar').val(),
         stock: $('#Stock_Editar').val(),
         nombre: $('#Nombre_Editar').val(),
@@ -84,8 +104,8 @@ $('#ActualizarFormP').on('submit', function (event) {
     };
     $.ajax({
         type: "PUT",
-        url: `https://localhost:7003/api/Productos/${datosP.id_productos}`,
-        data: JSON.stringify(datosP),
+        url: `https://localhost:7003/api/Productos/${datos.id_productos}`,
+        data: JSON.stringify(datos),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function (datos) {
@@ -187,17 +207,18 @@ function agregarProductoAdmin() {
     $('#BinarioONoBinarioPrAdd').on('submit', function (event) {
         event.preventDefault();
 
-        var datosAddPr = {
-            nombre: $('#producto').val()
+        var datos = {
+            stock: $('#stockP').val(),
+            nombre: $('#nombreP').val(),
+            id_categoria: $('#categoriaP').val()
+
         }
-
-
         $.ajax({
             type: "POST",
             url: "https://localhost:7003/api/Productos",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
-            data: JSON.stringify(datosAddPr),
+            data: JSON.stringify(datos),
             success: function (datos) {
                 $('#exampleModalPrAdd').modal('hide');
                 cargarProductosTabla();
@@ -208,7 +229,82 @@ function agregarProductoAdmin() {
 
         });
 
-
-
     })
 };
+
+
+
+
+function agregarCategoriaProductos() {
+    $.ajax({
+        type: "GET",
+        url: "https://localhost:7003/api/Categorias",
+        dataType: "json",
+        success: function (response) {
+            const categoriaFiltered = response.filter(a => a.id_Estado == 1)
+            const select = $('#categoriaP');
+            select.empty();
+            select.append(`<option selected>Ingrese la categoria</option>`)
+            $.each(categoriaFiltered, function (_, categoria) {
+                const datosP = `
+
+                <option value="${categoria.id_Categoria}">${categoria.nombre}</option>              
+                `            
+
+                select.append(datosP)
+
+            });
+            
+        },
+        error: function (xhr, status, error) {
+            console.log("ERROR:", error, xhr, status);
+        }
+    });
+
+
+}
+
+//------------------------------
+function mostrarProductos() {
+    $.ajax({
+        type: "GET",
+        url: "https://localhost:7003/api/Productos",
+        dataType: "json",
+        success: function (response) {
+            const producto = $('#ProductosMostrar');
+            producto.empty();
+            $.each(response, function (_, productos) {
+                const CategoriaNombre = categoriaP[productos.id_categoria] || 'No definido';
+                const product =
+                    `
+       
+            <div class="card" style="width: 18rem;">
+<a href="/ProductosMostrar/${productos.id_productos}" class="text-decoration-none text-center">
+                                        <img src="${productos.fotoPath}" alt="Portada" class="card-img-top" style="height: 220px; object-fit: contain;">
+
+                </a>  <div class="card-body">
+
+
+   <div class="card-body px-0">
+                    <h6 class="fw-semibold text-truncate" title="${productos.stock}">
+                        ${productos.nombre}
+                    </h6>
+                    <p class="text-muted small mb-1 text-uppercase">${CategoriaNombre}</p>
+                </div>
+
+    <a href="#" class="btn btn-primary">Go somewhere</a>
+  </div>
+</div>
+
+
+                    `;
+
+                producto.append(product);
+            });
+        },
+        error: function (xhr, status, error) {
+            console.log("ERROR:", error, xhr, status);
+        }
+    });
+
+}

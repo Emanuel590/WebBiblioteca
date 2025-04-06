@@ -51,31 +51,26 @@
             </div>
             <div class="modal-body">
                 <form method="POST" id="BinarioONoBinarioPrAdd">
-                    <div class="mb-3">
-                        <label for="producto" class="form-label">Nombre</label>
-                        <input type="text" class="form-control" id="producto" placeholder="Ingrese el nombre">
-                    </div>
-
 
                     <div class="mb-3">
-                        <input type="hidden" class="form-control" id="producto" placeholder="Actualice el producto">
+                        <label for="nombre" class="form-label">Nombre</label>
+                        <input type="text" class="form-control" id="nombreP" placeholder="Ingrese el producto">
                     </div>
 
                     <div class="mb-3">
-                        <label for="producto" class="form-label">Actualice el stock</label>
-                        <input type="number" class="form-control" id="producto" placeholder="Actualice el stock" min="0">
+                        <label for="stock" class="form-label">Stock</label>
+                        <input type="number" class="form-control" id="stockP" min="0" placeholder="Ingrese el stock">
                     </div>
 
                     <div class="mb-3">
-                        <label for="producto" class="form-label">Actualice el stock</label>
-                        <input type="number" class="form-control" id="producto" placeholder="Actualice el stock">
-                    </div>
+                        <label for="categoria" class="form-label">Categoria</label>
+                        <select class="form-select" id="categoriaP" aria-label="Default select example">
+                        </select>
+                   </div>
 
                     <div class="text-center">
                         <button type="submit" class="btn border-0" style="background-color: #F25835; border: #ffff; outline: none !important; box-shadow: none !important;"><h5 class="text-white fw-bold"><i class="fa-solid fa-square-check  px-2"></i>Agregar</h5></button>
                     </div>
-
-
                 </form>
             </div>
 
