@@ -4,8 +4,19 @@
 
 @{
     var authToken = Context.Session.GetString("AuthToken");
-    var userRole = Context.Session.GetInt32("UserRole");
+    int userRole;
+
+    if (authToken != null)
+    {
+        userRole = Context.Session.GetInt32("UserRole") ?? 0;
+    }
+    else
+    {
+        userRole = 0;
+    }
 }
+
+
 
 
 <!DOCTYPE html>
@@ -21,6 +32,7 @@
     <link rel="stylesheet" href="~/WebBiblioteca.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/nav.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" />
 
 
 </head>
@@ -38,11 +50,11 @@
                         @{
                             if (userRole == 1 || userRole == 3)
                             {
-                                <li class="nav-item px-3">
+                                <li class="nav-item nav-items px-3">
                                     <a class="nav-link active fs-5" href="/LibrosAdmin">Libros</a>
                                 </li>
                             }else{
-                                <li class="nav-item px-3">
+                                <li class="nav-item nav-items px-3">
                                     <a class="nav-link active fs-5" href="/Libros">Libros</a>
                                 </li>
                             }
@@ -53,11 +65,11 @@
                             @{
                                 if (userRole == 1 || userRole == 3)
                                 {
-                                    <a class="nav-link active fs-5" href="/GenerosAdmin" role="button">
+                                    <a class="nav-link active nav-items fs-5" href="/GenerosAdmin" role="button">
                                         Generos
                                     </a>
                                 }else{
-                                    <a class="nav-link active fs-5" href="" role="button">
+                                    <a class="nav-link active nav-items fs-5" href="" role="button">
                                         Generos
                                     </a>
                                 }
@@ -72,31 +84,31 @@
                             if (userRole == 1 || userRole == 3)
                             {
                                 <li class="nav-item px-3">
-                                    <a class="nav-link active fs-5" href="/AutoresAdmin">Autores</a>
+                                    <a class="nav-link active nav-items fs-5" href="/AutoresAdmin">Autores</a>
                                 </li>
                                 <li class="nav-item px-3">
-                                    <a class="nav-link active fs-5" href="/CategoriaAdmin">Categoria</a>
+                                    <a class="nav-link active nav-items fs-5" href="/CategoriaAdmin">Categoria</a>
                                 </li>
                                 <li class="nav-item px-3">
-                                    <a class="nav-link active fs-5" href="/ReclamosAdmin">Reclamos</a>
+                                    <a class="nav-link active nav-items fs-5" href="/ReclamosAdmin">Reclamos</a>
                                 </li>
                                 <li class="nav-item px-3">
-                                    <a class="nav-link active fs-5" href="/resena">Reseñas</a>
+                                    <a class="nav-link active nav-items fs-5" href="/resena">Reseñas</a>
                                 </li>
                                 <li class="nav-item px-3">
-                                    <a class="nav-link active fs-5" href="/ReservasAdmin">Reservas</a>
+                                    <a class="nav-link active nav-items fs-5" href="/ReservasAdmin">Reservas</a>
                                 </li>
                             }
                         }
 
                         <li class="nav-item px-3">
-                            <a class="nav-link active fs-5" href="/ProductosMostrar">Productos</a>
+                            <a class="nav-link active nav-items fs-5" href="/ProductosMostrar">Productos</a>
                         </li>
                         @{
                             if (userRole == 1 || userRole == 3)
                             {
                                 <li class="nav-item px-3">
-                                    <a class="nav-link active fs-5" href="/CategoriaAdmin">Categorias</a>
+                                    <a class="nav-link active nav-items fs-5" href="/CategoriaAdmin">Categorias</a>
                                 </li>
                             }
                         }
@@ -109,19 +121,19 @@
 
                         @if (authToken != null)
                         {
-                            <a href="/PerfilUsuario" class="text-decoration-none">
+                            <a href="/PerfilUsuario"  class="text-decoration-none ">
                                 <i class="fa-solid fa-user text-white px-3 fs-5"></i>
                             </a>
 
                             <form method="post" asp-page="/Logout" asp-page-handler="OnPost" style="display:inline;">
-                                <button type="submit" class="btn btn-link text-white fs-5 text-decoration-none">Logout</button>
+                                <button type="submit" class="btn btn-link text-white fs-5 text-decoration-none nav-items">Logout</button>
                             </form>
 
                            
                         }
                         else
                         {
-                            <a href="/Login" class="text-white fs-5 px-3 text-decoration-none">Login</a>
+                            <a href="/Login" class="text-white fs-5 px-3 text-decoration-none nav-items">Login</a>
                         }
 
 
@@ -150,6 +162,8 @@
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
     <script src="~/js/Generos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

@@ -5,5 +5,21 @@
     }
 
 
+.nav-items {
+    background-color: #795D8C;
+    border-radius: 50px;
+    transition: background-color 0.5s ease, transform 0.5s ease;
+    transition-delay: 0s;
+}
+
+    .nav-items:hover {
+        background-color: #362045;
+        border-radius: 50px;
+        transition-delay: 0.3s;
+    }
+
+
+
+
 
 

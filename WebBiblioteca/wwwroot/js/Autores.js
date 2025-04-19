@@ -1,78 +1,74 @@
-﻿//DOM
+﻿var tablaAutores;
+
 $(document).ready(function () {
     cargarAutoresTabla();
     agregarAutores();
-})
+});
 
-
-
-
-
-
-
-
-//Metodo obtener Autores
-function cargarAutoresTabla()
-{
-    $.ajax({
-        type: "GET",
-        url: "https://localhost:7003/api/Autores",
-        dataType: "json",
-        success: function (response) {
-            const tabla = $('#tablaAutores tbody');
-            tabla.empty();
-            $.each(response, function (_, autores) {
-                const row = `
-                    <tr>
-                        <td>${autores.id_Autor}</td>
-                        <td>${autores.nombre}</td>
-                        <td>${autores.apellido}</td>
-                        <td>${autores.id_Estado == 1 ?
-                        `<span class="text-success">Activo</span>` :
-                        `<span class="text-danger">Inactivo</span>`
-                    }</td>
-                        <td>
-                            ${autores.id_Estado == 1 ?
-                    `<button class="btn btn-danger rounded px-2 py-1" onclick="actualizarEstadoIdAutor(${autores.id_Autor}, '${autores.nombre}', '${autores.apellido}', 2)">
+// Método para inicializar la tabla
+function cargarAutoresTabla() {
+    
+    if (!$.fn.DataTable.isDataTable('#tablaAutores')) { // Verifica si la tabla ya está inicializada
+        tablaAutores = $('#tablaAutores').DataTable({
+            ajax: {
+                url: "https://localhost:7003/api/Autores",
+                dataSrc: '' // arreglo directo
+            },
+            dom: 'frtip',
+            columns: [
+                { data: 'id_Autor' },
+                { data: 'nombre' },
+                { data: 'apellido' },
+                {
+                    data: 'id_Estado',
+                    render: function (data) {
+                        return data == 1
+                            ? '<span class="text-success">Activo</span>'
+                            : '<span class="text-danger">Inactivo</span>';
+                    }
+                },
+                {
+                    data: null,
+                    render: function (row) {
+                        let botonEstado = row.id_Estado == 1
+                            ? `<button class="btn btn-danger rounded px-2 py-1" onclick="actualizarEstadoIdAutor(${row.id_Autor}, '${row.nombre}', '${row.apellido}', 2)">
                                     <i class="fa-solid fa-eye-slash"></i> Inactivar
-                                </button>` :
-                    `<button class="btn btn-success rounded px-2 py-1" onclick="actualizarEstadoIdAutor(${autores.id_Autor}, '${autores.nombre}', '${autores.apellido}', 1)">
+                               </button>`
+                            : `<button class="btn btn-success rounded px-2 py-1" onclick="actualizarEstadoIdAutor(${row.id_Autor}, '${row.nombre}', '${row.apellido}', 1)">
                                     <i class="fa-solid fa-eye"></i> Activar
-                                </button>` }
-                                <button  data-bs-toggle="modal" data-bs-target="#exampleModal2" onclick="formActualizar(${autores.id_Autor}, '${autores.nombre}', '${autores.apellido}', ${autores.id_Estado})" class="btn btn-primary rounded px-2 py-1">
-                                  Editar
-                                </button >
-                        </td>
-                        <td>
-                                <button onclick="eliminarAutorId(${autores.id_Autor})" class="btn btn-danger rounded px-2 py-1">
+                               </button>`;
+                        let botonEditar = `<button data-bs-toggle="modal" data-bs-target="#exampleModal2" onclick="formActualizar(${row.id_Autor}, '${row.nombre}', '${row.apellido}', ${row.id_Estado})" class="btn btn-primary rounded px-2 py-1">
+                                                Editar
+                                           </button>`;
+                        return botonEstado + ' ' + botonEditar;
+                    }
+                },
+                {
+                    data: null,
+                    render: function (row) {
+                        return `<button onclick="eliminarAutorId(${row.id_Autor})" class="btn btn-danger rounded px-2 py-1">
                                     <i class="fa-solid fa-trash"></i> Eliminar
-                                </button >
-                        </td>
-                    </tr>
-                `;
-                tabla.append(row);
-            });
-        },
-        error: function (xhr, status, error) {
-            console.log("ERROR:", error, xhr, status);
-        }
-    });
+                                </button>`;
+                    }
+                }
+            ]
+        });
+    } else {
 
-
-
+        tablaAutores.ajax.reload();
+    }
 }
 
-
-function formActualizar(id, nombre, apellido, estado)
-{
+// Función para mostrar el formulario de actualización
+function formActualizar(id, nombre, apellido, estado) {
     $('#id').val(id);
     $('#nombreEditar').val(nombre);
     $('#apellidoEditar').val(apellido);
     $('#estadoEditar').val(estado);
-
-    $('#exampleModal2').modal('show')
+    $('#exampleModal2').modal('show');
 }
 
+// Enviar datos para actualizar
 $('#AutoresActualizar').on('submit', function (event) {
     event.preventDefault();
 
@@ -83,7 +79,6 @@ $('#AutoresActualizar').on('submit', function (event) {
         id_Estado: $('#estadoEditar').val()
     };
 
-
     $.ajax({
         type: "PUT",
         url: `https://localhost:7003/api/Autores/${datos.id_Autor}`,
@@ -92,7 +87,7 @@ $('#AutoresActualizar').on('submit', function (event) {
         dataType: "json",
         success: function (datos) {
 
-            cargarAutoresTabla();
+            tablaAutores.ajax.reload();
             $('#exampleModal2').modal('hide');
         },
         error: function (xhr, status, error) {
@@ -101,17 +96,15 @@ $('#AutoresActualizar').on('submit', function (event) {
     });
 });
 
-
-//Metodo para agregar Autores
+// Método para agregar autores
 function agregarAutores() {
     $('#AutoresAgregar').on('submit', function (event) {
         event.preventDefault();
 
-        var datos =
-        {
+        var datos = {
             nombre: $('#nombre').val(),
             apellido: $('#apellido').val()
-        }
+        };
 
         $.ajax({
             type: "POST",
@@ -121,21 +114,17 @@ function agregarAutores() {
             data: JSON.stringify(datos),
             success: function (datos) {
                 $('#exampleModal').modal('hide');
-                cargarAutoresTabla();
+
+                tablaAutores.ajax.reload();
             },
             error: function (xhr, status, error) {
-                console.log("ERROR: ", error, xhr, status)
+                console.log("ERROR: ", error, xhr, status);
             }
-
         });
-
-
-
-    })
-
+    });
 }
 
-//Metodo para Actualizar Estado
+// Método para actualizar estado (activar/inactivar)
 function actualizarEstadoIdAutor(id, nombreEstado, apellidoEstado, estado) {
     var datos = { id_Autor: id, nombre: nombreEstado, apellido: apellidoEstado, id_Estado: estado };
     $.ajax({
@@ -145,7 +134,8 @@ function actualizarEstadoIdAutor(id, nombreEstado, apellidoEstado, estado) {
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         success: function (datos) {
-            cargarAutoresTabla();
+
+            tablaAutores.ajax.reload();
         },
         error: function (xhr, status, error) {
             console.log("ERROR:", error, xhr, status);
@@ -153,9 +143,9 @@ function actualizarEstadoIdAutor(id, nombreEstado, apellidoEstado, estado) {
     });
 }
 
-//Metodo para eliminar Autores
+// Método para eliminar autores
 function eliminarAutorId(id) {
-    idParseada = parseInt(id)
+    let idParseada = parseInt(id);
     Swal.fire({
         title: "¿Estás seguro que deseas eliminar este Autor?",
         html: "Si lo haces no podrás recuperar la información.",
@@ -168,12 +158,13 @@ function eliminarAutorId(id) {
                 type: "DELETE",
                 url: `https://localhost:7003/api/Autores/${idParseada}`,
                 success: function (response) {
-                    Swal.fire("Eliminado", "El género ha sido eliminado.", "success");
-                    cargarAutoresTabla();
+                    Swal.fire("Eliminado", "El autor ha sido eliminado.", "success");
+
+                    tablaAutores.ajax.reload();
                 },
                 error: function (xhr, status, error) {
                     console.log("ERROR:", error, xhr.status, xhr.responseText);
-                    Swal.fire("Error", "No se pudo eliminar el autor. Lo mas probable tengas un autor asociado a otra entidad", "error");
+                    Swal.fire("Error", "No se pudo eliminar el autor. Lo más probable es que tengas un autor asociado a otra entidad.", "error");
                 }
             });
         } else if (result.isDenied) {
