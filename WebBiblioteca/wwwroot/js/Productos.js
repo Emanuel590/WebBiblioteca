@@ -91,10 +91,7 @@ function cargarProductosTabla() {
           ${row.id_categoria},
          ${row.iD_ESTADO},
          '${row.fotoPath}'
-      )"
-    >
-  <i class="fa-solid fa-edit"></i> Editar
-                                           </button>`;
+      )"><i class="fa-solid fa-edit"></i> Editar </button>`;
                     return botonEstadoP + ' ' + botonEditarP;
                 }
             }
@@ -278,9 +275,9 @@ function mostrarProductos() {
                             </a>
                             <div class="card-body px-0">
                                 <h6 class="fw-semibold text-truncate" title="${productos.nombre}">${productos.nombre}</h6>
-                                <p class="text-muted small mb-1 text-uppercase">${CategoriaNombre}</p>
-                                <p class="fw-semibold text-dark">₡${productos.precioProducto}</p>
-                                                                <p class="fw-semibold text-dark">₡${productos.stock}</p>
+                                <p class="text-muted small mb-1 text-uppercase"> ${CategoriaNombre}</p>
+                                <p class="fw-semibold text-dark">Precio ₡${productos.precioProducto}</p>
+                                 <p class="fw-semibold text-dark">Stock: ${productos.stock}</p>
 
                             </div>
                         </div>

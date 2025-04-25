@@ -1,122 +1,139 @@
-﻿//Mostrar los Metodos en el DOM
+﻿
+let libros = [];
+let usuarios = [];
+let tablaReservas;
+
 $(document).ready(function () {
     cargarReservasTabla();
+    cargarLibroReserva();
+    cargarUsuario();
+
 });
 
-//Mostrar Reservas ADMIN
-function cargarReservasTabla() {
-    cargarEstadosReserva().then(function () {    
-    $.ajax({
-        type: "GET",
-        url: "https://localhost:7003/api/Reservas",
-        dataType: "json",
-        success: function (response) {
-            const tabla = $('#ReservasTabla tbody')
-            tabla.empty();
 
-            $.each(response, function (_, adminReservas) {
-                let estadosD = '';
-
-                estadosAlm.forEach(estado => { 
-                    estadosD += `
-                      <option value="${estado.id_Estado}" ${adminReservas.iD_ESTADO == estado.id_Estado ? 'selected' : ''}> 
-                                ${estado.descripcion}
-                            </option>`;
-
-                });
-
-                const row = `
-                <tr>
-                        <td>${adminReservas.id_reservas}</td>
-                        <td>${adminReservas.id_Libro}</td>
-                        <td>${adminReservas.id_Usuario}</td>
-                        <td>${adminReservas.fecha}</td>
-                       
- <td>
-                                  <select class="form-select form-select-sm" onchange="actualizarEstadoAdminReservasId(${adminReservas.id_reservas}, ${adminReservas.id_Libro}, ${adminReservas.id_Usuario}, '${adminReservas.fecha}', this.value)">
-                                    ${estadosD}
-                                </select>
-                            </td>
-                           d
-                            <td>
-                                <button onclick="eliminarReservaAdminId(${adminReservas.id_reservas})" class="btn btn-danger rounded px-2 py-1">
-                                    <i class="fa-solid fa-trash"></i> Eliminar
-                                </button>
-                            </td>
-                        </tr>`;
-
-                tabla.append(row);
-            });
-        },
-        error: function (xhr, status, error) {
-            console.log("ERROR:", error, xhr, status);
-        }
-    });
-    });
-}
-
-//--------------------------------//
-let estadosAlm = [];
-
-function cargarEstadosReserva() {
-    return $.ajax({
-        type: "GET",
-        url: "https://localhost:7003/api/Estados",
-        dataType: "json",
-        success: function (response) {
-            estadosAlm = response;
-        },
-        error: function (xhr, status, error) {
-            console.log("ERROR cargando estados:", error, xhr, status);
-        }
-    });
-}
-
-//-----por terminar pasar de int a string ---------//
-let LibrosAlm = 
+//--------------------
 function cargarLibroReserva() {
-    return $.ajax({
+   $.ajax({
         type: "GET",
         url: "https://localhost:7003/api/Libros",
         dataType: "json",
         success: function (response) {
-            LibrosAlm = response;
+            $.each(response, function (_, libro) {
+
+                libros[libro.id_libro] = libro.titulo;
+            });
+            if (tablaReservas) {
+                tablaReservas.ajax.reload();
+            }
         },
         error: function (xhr, status, error) {
             console.log("ERROR cargando estados:", error, xhr, status);
         }
     });
 }
+function cargarUsuario() {
+    const token = localStorage.getItem("AuthToken");
 
-let UsuariosAlm = [];
-
-function cargarUsuariosReserva() {
-    return $.ajax({
+    $.ajax({
         type: "GET",
         url: "https://localhost:7003/api/Usuarios",
         dataType: "json",
+
+        headers: {
+            'Authorization': 'Bearer ' + token
+        },
         success: function (response) {
-            UsuariosAlm = response;
+            $.each(response, function (_, usuario) {
+                usuarios[usuario.id_usuario] = usuario.email;
+            });
+
+            if (tablaReservas) {
+                tablaReservas.ajax.reload(null, false);
+            } else {
+                cargarReservasTabla();
+            }
         },
         error: function (xhr, status, error) {
-            console.log("ERROR cargando estados:", error, xhr, status);
+            console.log("ERROR al cargar usuarios:", error, xhr, status);
         }
     });
 }
 
 
 
-function actualizarEstadoAdminReservasId(idReservas, idLibro, idUsuario, Fecha, estado) {
-    var datos = { id_reservas: idReservas, id_Libro: idLibro, id_Usuario: idUsuario, fecha: Fecha, iD_ESTADO: estado };
+//Mostrar Reservas ADMIN
+function cargarReservasTabla() {
+    if (!$.fn.DataTable.isDataTable('#tablaReservas')) {
+        tablaReservas = $('#tablaReservas').DataTable({
+            ajax: {
+            url: "https://localhost:7003/api/Reservas",
+            dataSrc: ''
+           },
+        dom: 'frtip',
+        columns: [
+            { data: 'id_reservas' },
+
+            {
+                data: 'id_Libro',
+                render: function (data) {
+                    return libros[data] || 'No definido';
+                }
+
+            },
+            {
+                data: 'id_Usuario',
+                render: function (data) {
+                return usuarios[data] || 'No definido';
+                }
+            },
+            { data: 'fecha' },
+            {
+                data: null,
+                render: function (row) {
+                    let botonEstado = row.id_Estado == 1
+                        ? `<button class="btn btn-danger rounded px-2 py-1" onclick="actualizarEstadoReserva(${row.id_reservas}, 2,)">
+                                    <i class="fa-solid fa-eye-slash"></i> Inactivar
+                               </button>`
+                        : `<button class="btn btn-success rounded px-2 py-1" onclick="actualizarEstadoReserva(${row.id_reservas},  1)">
+                                    <i class="fa-solid fa-eye"></i> Activar
+                               </button>`;
+                    
+                    return botonEstado;
+                }
+            },
+      
+            {
+                data: null,
+                render: function (row) {
+                    return ` <button onclick="eliminarReservaAdminId(${row.id_reservas})" class="btn btn-danger rounded px-2 py-1">
+                                    <i class="fa-solid fa-trash"></i> Eliminar
+                                </button>`;
+                    }
+                }
+            ]
+        });
+    } else {
+
+        tablaReservas.ajax.reload();
+    }
+}
+
+   
+     
+
+function actualizarEstadoReserva(id_reservas, estado) {
+    var datos = {
+        id_reservas: id_reservas,
+        iD_ESTADO: estado
+    };
     $.ajax({
         type: "PUT",
-        url: `https://localhost:7003/api/Reservas/${idReservas}`,
+        url: `https://localhost:7003/api/Reservas/estado/${datos.id_reservas}?estado=${datos.iD_ESTADO}`,
         data: JSON.stringify(datos),
         contentType: "application/json; charset=utf-8",
- 
-        success: function () {//llega a datos con undifined pero el resto lo lee bien 
-            cargarReservasTabla();
-            
+        dataType: "json",
+        success: function (response) {
+            tablaReservas.ajax.reload();
         },
         error: function (xhr, status, error) {
             console.log("ERROR:", error, xhr, status);
@@ -125,7 +142,7 @@ function actualizarEstadoAdminReservasId(idReservas, idLibro, idUsuario, Fecha, 
 }
 
 function eliminarReservaAdminId(idReservas) {
-    idReEli = parseInt(idReservas)
+    const idParseadaReserva = parseInt(idReservas)
     Swal.fire({
         title: "¿Estás seguro que deseas eliminar esta reserva?",
         html: "Si lo haces no podrás recuperar la información.",
@@ -136,10 +153,10 @@ function eliminarReservaAdminId(idReservas) {
         if (result.isConfirmed) {
             $.ajax({
                 type: "DELETE",
-                url: `https://localhost:7003/api/Reservas/${idReEli}`,
-                success: function (response) {
+                url: `https://localhost:7003/api/Reservas/${idParseadaReserva}`,
+                success: function () {
                     Swal.fire("Eliminado", "Reserva se ha eliminado.", "success");
-                    cargarReservasTabla();
+                    tablaReservas.ajax.reload();
                 },
                 error: function (xhr, status, error) {
                     console.log("ERROR:", error, xhr.status, xhr.responseText);
