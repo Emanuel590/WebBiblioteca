@@ -14,7 +14,7 @@
         </div>
         <div class="d-flex align-items-center mt-3 mt-md-0">
             <label for="ordenar" class="me-2 fw-semibold">Ordenar por:</label>
-            <select id="ordenar" class="form-select w-auto" >
+            <select id="ordenar" class="form-select w-auto">
                 <option value="seleccion">libros</option>
                 <option value="precio_menor">Precio menor</option>
                 <option value="precio_mayor">Precio mayor</option>
@@ -25,7 +25,6 @@
 
 
     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 g-4" id="librosMostrarId">
-
     </div>
 
 
@@ -45,11 +44,11 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 @section Scripts {
-	<script src="~/js/Generos.js"></script>
-	<script src="~/js/Libros.js"></script>
+    <script src="~/js/Generos.js"></script>
+    <script src="~/js/Libros.js"></script>
 
-	<script>
-		const generoId = @Model.IdGenero;
-		libroPorGenero(generoId);
-	</script>
+    <script>
+        const generoId = @Model.IdGenero;
+        libroPorGenero(generoId);
+    </script>
 }

@@ -402,11 +402,6 @@ function obtenerLibro(id) {
             precio_Producto_cantidad: libro.precio_alquiler * 1
         }
 
-
-        
-
-
-
         let carrito = JSON.parse(sessionStorage.getItem('carritoLibros') || '[]')
 
         const indexExistente = carrito.findIndex(c =>

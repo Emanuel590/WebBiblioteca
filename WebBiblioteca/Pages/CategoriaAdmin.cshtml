@@ -1,99 +1,91 @@
 ﻿@page
 @model WebBiblioteca.Pages.Pages_CategoriaAdmin
 @{
-    ViewData["Title"] = "Admin Categoria";
+    ViewData["Title"] = "Admin Categorías";
 }
-<div class="my-5 container">
+<div class="container my-5">
     <div class="card">
-        <h1 class="card-header text-center text-white" style="background-color: #F2A172">Registro de Categorias</h1>
+        <h1 class="card-header text-center text-white" style="background-color: #F2A172">
+            Registro de Categorías
+        </h1>
         <div class="card-body">
-            <table class="table" id="tablaCategoria">
+            <table id="tablaCategoria" class="table table-striped">
                 <thead>
                     <tr class="text-center">
-                        <th scope="col">#</th>
-                        <th scope="col">Categoria</th>
-                        <th scope="col">Estado</th>
-                        <th scope="col">Acciones</th>
-                        <th scope="col">Acciones Admin</th>
+                        <th>#</th>
+                        <th>Categoría</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                        <th>Acciones Admin</th>
                     </tr>
                 </thead>
-                <tbody class="text-center">
-                </tbody>
+                <tbody></tbody>
             </table>
         </div>
     </div>
 </div>
 
 <div class="text-center">
-    <a type="button" class="btn rounded-0" style="background-color: #F25835; border: none;" data-bs-toggle="modal" data-bs-target="#exampleModal">
-        <h6 class="text-white fw-bold"><i class="fa-solid fa-book-open px-1 "></i>Agregar Categorias</h6>
+    <a class="btn rounded-0" style="background-color: #F25835; border: none;" data-bs-toggle="modal" data-bs-target="#exampleModal">
+        <h6 class="text-white fw-bold">
+            <i class="fa-solid fa-book-open px-1"></i> Agregar Categoría
+        </h6>
     </a>
 </div>
 
 
-
-<!-- Modal -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <div class="text-center">
-                    <h1 class="modal-title fs-5 " id="exampleModalLabel">Agregar Categorias</h1>
-
+            <form id="formAgregarCategoria">
+                <div class="modal-header">
+                    <h5 class="modal-title">Agregar Categoría</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form method="POST" id="BinarioONoBinario">
-                    <div class="mb-3">
-                        <label for="categoria" class="form-label">categoria</label>
-                        <input type="text" class="form-control" id="categoria" placeholder="Ingrese el categoria">
-                    </div>
-
-                    <div class="text-center">
-                        <button type="submit" class="btn border-0" style="background-color: #F25835; border: #ffff; outline: none !important; box-shadow: none !important;"><h5 class="text-white fw-bold"><i class="fa-solid fa-square-check  px-2"></i>Agregar</h5></button>
-                    </div>
-                </form>
-            </div>
-
+                <div class="modal-body">
+                    <input type="text" id="categoriaNueva" class="form-control" placeholder="Nombre de la categoría" required>
+                </div>
+                <div class="modal-footer text-center">
+                    <button type="submit" class="btn border-0" style="background-color: #F25835;">
+                        <h5 class="text-white fw-bold">
+                            <i class="fa-solid fa-square-check px-2"></i> Agregar
+                        </h5>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
-<!-- Button trigger modal -->
-<!-- Modal -->
-<div class="modal fade" id="exampleModal1" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+
+<div class="modal fade" id="exampleModal1" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Actualizar Categori</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form method="POST" id="ActualizarForm">
-                    <div class="mb-3">
-                        <input type="hidden" class="form-control" id="id_Editar" placeholder="Actualice la Categoria">
-                    </div>
-                    <div class="mb-3">
-                        <label for="categoria" class="form-label">Categorias</label>
-                        <input type="text" class="form-control" id="categoria_Editar" placeholder="Actualice el Categoria">
-                    </div>
-                    <div class="mb-3">
-                        <input type="hidden" class="form-control" id="estado_Editar" placeholder="Actualice el Categoria">
-                    </div>
-
-                    <div class="text-center">
-                        <button type="submit" class="btn border-0" style="background-color: #F25835; border: #ffff; outline: none !important; box-shadow: none !important;">
-                            <h5 class="text-white fw-bold">
-                                <i class="fa-solid fa-square-check  px-2"></i>Actualizar
-                            </h5>
-                        </button>
-                    </div>
-                </form>
-            </div>
+            <form id="formActualizarCategoria">
+                <div class="modal-header">
+                    <h5 class="modal-title">Actualizar Categoría</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="idEditar">
+                    <input type="text" id="categoriaEditar" class="form-control mb-3" placeholder="Nombre de la categoría" required>
+                    <input type="hidden" id="estadoEditar">
+                </div>
+                <div class="modal-footer text-center">
+                    <button type="submit" class="btn border-0" style="background-color: #F25835;">
+                        <h5 class="text-white fw-bold">
+                            <i class="fa-solid fa-square-check px-2"></i> Actualizar
+                        </h5>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="~/js/CategoriaAdmin.js"></script>
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script src="~/js/CategoriaAdmin.js"></script>
+}

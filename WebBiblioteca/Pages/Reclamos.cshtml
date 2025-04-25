@@ -1,0 +1,32 @@
+﻿@page
+@model WebBiblioteca.Pages.ReclamosModel
+@{ }
+
+<div class="container mt-4">
+    <h2>Enviar un Reclamo</h2>
+    <form id="formReclamo" class="mt-3">
+        <div class="mb-3">
+            <label for="seleccionarLibro" class="form-label">Libro</label>
+            <select id="seleccionarLibro" class="form-select" required>
+                <option value="">Selecciona un libro</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="descripcionReclamo" class="form-label">Descripción del reclamo</label>
+            <textarea id="descripcionReclamo" class="form-control" rows="4" required placeholder="Escribe tu reclamo aquí..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">
+            Enviar Reclamo
+        </button>
+    </form>
+
+    <hr class="my-5" />
+
+    <h3>Mis Reclamos</h3>
+    <div id="listaReclamos" class="list-group mt-3"></div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="~/js/Reclamos.js"></script>
+}
