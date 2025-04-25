@@ -317,67 +317,162 @@ function mostrarListaUsuariosEmpleado(listaUsuarios, emailUsuario) {
 function mostrarPerfilCliente(cliente) {
     var html = `
         <div class="container">
-            <div class="main-body">
-                <nav aria-label="breadcrumb" class="main-breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/Index">Inicio</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Perfil de Cliente</li>
-                    </ol>
-                </nav>
-                <div class="row gutters-sm">
-                    <div class="col-md-4 mb-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="d-flex flex-column align-items-center text-center">
-                                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 150px; height: 150px; font-size: 72px;">
-                                        <i class="fa fa-user text-secondary"></i>
-                                    </div>
-                                    <div class="mt-3">
-                                        <h4>${cliente.nombre}</h4>
-                                        <p class="text-secondary mb-1">Cliente</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+          <div class="main-body">
+            <nav aria-label="breadcrumb" class="main-breadcrumb">
+              <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="/Index">Inicio</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Perfil de Cliente</li>
+              </ol>
+            </nav>
+            <div class="row gutters-sm">
+              <div class="col-md-4 mb-3">
+                <div class="card">
+                  <div class="card-body text-center">
+                    <div class="rounded-circle bg-light d-flex align-items-center justify-content-center" style="width:150px; height:150px; font-size:72px;">
+                      <i class="fa fa-user text-secondary"></i>
                     </div>
-                    <div class="col-md-8">
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-sm-3"><h6 class="mb-0">Email</h6></div>
-                                    <div class="col-sm-9 text-secondary">${cliente.email}</div>
-                                </div><hr>
-                                <div class="row">
-                                    <div class="col-sm-3"><h6 class="mb-0">Teléfono</h6></div>
-                                    <div class="col-sm-9 text-secondary">${cliente.telefono || 'No disponible'}</div>
-                                </div><hr>
-                                <div class="row">
-                                    <div class="col-sm-3"><h6 class="mb-0">Cédula</h6></div>
-                                    <div class="col-sm-9 text-secondary">${cliente.cedula || 'No disponible'}</div>
-                                </div><hr>
-                                <div class="row">
-                                    <div class="col-sm-3"><h6 class="mb-0">Código Postal</h6></div>
-                                    <div class="col-sm-9 text-secondary">${cliente.codigo_postal || 'No disponible'}</div>
-                                </div><hr>
-                                <div class="row">
-                                    <div class="col-sm-12 text-center">
-                                        <button class="btn btn-outline-purple" onclick="editarUsuario(${cliente.id_usuario})">
-                                            <i class="fa fa-pen me-1"></i> Editar Mi Información
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <h4 class="mt-3">${cliente.nombre}</h4>
+                    <p class="text-secondary mb-1">Cliente</p>
+                  </div>
                 </div>
+              </div>
+              <div class="col-md-8">
+                <div class="card mb-3">
+                  <div class="card-body">
+                    <div class="row"><div class="col-sm-3"><h6>Email</h6></div><div class="col-sm-9 text-secondary">${cliente.email}</div></div><hr>
+                    <div class="row"><div class="col-sm-3"><h6>Teléfono</h6></div><div class="col-sm-9 text-secondary">${cliente.telefono || 'No disponible'}</div></div><hr>
+                    <div class="row"><div class="col-sm-3"><h6>Cédula</h6></div><div class="col-sm-9 text-secondary">${cliente.cedula || 'No disponible'}</div></div><hr>
+                    <div class="row"><div class="col-sm-3"><h6>Código Postal</h6></div><div class="col-sm-9 text-secondary">${cliente.codigo_postal || 'No disponible'}</div></div>
+                  </div>
+                </div>
+              </div>
             </div>
+          </div>
+        </div>
+
+        <div class="container mt-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="mb-0">Mis tarjetas</h5>
+            <button class="btn btn-sm btn-success" onclick="mostrarFormCrearTarjeta()">
+              <i class="fa fa-plus me-1"></i> Nueva tarjeta
+            </button>
+          </div>
+          <div class="row" id="rowTarjetas">
+            <!-- Tarjetas se insertarán aquí -->
+          </div>
         </div>
     `;
     $('#perfilUsuario').html(html);
+    cargarTarjetasCliente();
+}
+
+function cargarTarjetasCliente() {
+    var authToken = sessionStorage.getItem('AuthToken');
+    $.ajax({
+        url: 'https://localhost:7003/api/pagos',
+        type: 'GET',
+        headers: { 'Authorization': 'Bearer ' + authToken },
+        success: function (cards) {
+            console.log('Respuesta API /api/pagos:', cards);
+            var grid = '';
+            cards.forEach(function (c) {
+                grid += `
+                  <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+                    <div class="card tarjeta-card h-100">
+                      <div class="card-body d-flex flex-column">
+                        <p class="tarjeta-number mb-2">${c.n_Tarjeta}</p>
+                        <p class="tarjeta-bank text-muted mb-4">${c.entidad_Bancaria}</p>
+                        <div class="mt-auto text-end">
+                          <button class="btn btn-sm btn-danger" onclick="confirmarEliminarTarjeta(${c.id_metodo})">
+                            <i class="fa fa-trash"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>`;
+            });
+            $('#rowTarjetas').html(grid);
+        },
+        error: function (xhr) {
+            alert('Error al cargar tarjetas: ' + xhr.responseText);
+        }
+    });
 }
 
 
+function mostrarFormCrearTarjeta() {
+    $('#tarjetaForm')[0].reset();
+    $('#id_metodo').val('');
+    $('#tarjetaModalTitle').text('Agregar Nueva Tarjeta');
+    new bootstrap.Modal($('#tarjetaModal')).show();
+}
 
+function editarTarjeta(id) {
+    var authToken = sessionStorage.getItem('AuthToken');
+    $.ajax({
+        url: 'https://localhost:7003/api/pagos/' + id,
+        type: 'GET',
+        headers: { 'Authorization': 'Bearer ' + authToken },
+        success: function (data) {
+            $('#tarjetaModalTitle').text('Editar Tarjeta');
+            $('#id_metodo').val(data.id_metodo);
+            $('#metodoPago').val(data.metodo_Pago);
+            $('#entidadBancaria').val(data.entidad_Bancaria);
+            $('#nTarjeta').val(''); // no mostramos el real
+            $('#idEstado').val(data.id_estado);
+            new bootstrap.Modal($('#tarjetaModal')).show();
+        },
+        error: function (xhr) {
+            alert('Error al obtener tarjeta: ' + xhr.responseText);
+        }
+    });
+}
+
+function guardarTarjeta() {
+    var authToken = sessionStorage.getItem('AuthToken');
+    var id = $('#id_metodo').val();
+    var payload = {
+        Id_metodo: id ? parseInt(id) : 0,
+        Metodo_Pago: $('#metodoPago').val(),
+        Entidad_Bancaria: $('#entidadBancaria').val(),
+        N_Tarjeta: $('#nTarjeta').val(),
+        ID_ESTADO: parseInt($('#idEstado').val())
+    };
+    var method = id ? 'PUT' : 'POST';
+    var url = 'https://localhost:7003/api/pagos' + (id ? '/' + id : '');
+
+    $.ajax({
+        url: url,
+        type: method,
+        contentType: 'application/json',
+        headers: { 'Authorization': 'Bearer ' + authToken },
+        data: JSON.stringify(payload),
+        success: function () {
+            bootstrap.Modal.getInstance($('#tarjetaModal')).hide();
+            cargarTarjetasCliente();
+        },
+        error: function (xhr) {
+            alert('Error al guardar tarjeta: ' + xhr.responseText);
+        }
+    });
+}
+
+function confirmarEliminarTarjeta(id) {
+    if (confirm('¿Eliminar definitivamente esta tarjeta?')) {
+        var authToken = sessionStorage.getItem('AuthToken');
+        $.ajax({
+            url: 'https://localhost:7003/api/pagos/' + id,
+            type: 'DELETE',
+            headers: { 'Authorization': 'Bearer ' + authToken },
+            success: function () {
+                cargarTarjetasCliente();
+            },
+            error: function (xhr) {
+                alert('Error al eliminar tarjeta: ' + xhr.responseText);
+            }
+        });
+    }
+}
 
 function crearUsuario() {
     alert('Funcionalidad para crear un nuevo usuario.');

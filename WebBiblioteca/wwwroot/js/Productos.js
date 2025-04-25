@@ -1,5 +1,4 @@
-﻿
-$(document).ready(function () {
+﻿$(document).ready(function () {
     cargarProductosTabla();
     CategoriaCargar();
     CategoriaSelect();
@@ -102,7 +101,7 @@ function cargarProductosTabla() {
 
 
 
-function editarProducto(id_productos, stock, nombre, precioProducto, id_categoria,  iD_ESTADO, fotoPath) {
+function editarProducto(id_productos, stock, nombre, precioProducto, id_categoria, iD_ESTADO, fotoPath) {
     $('#idProductos_Editar').val(id_productos);
     $('#Stock_Editar').val(stock);
     $('#Nombre_Editar').val(nombre);
@@ -112,7 +111,7 @@ function editarProducto(id_productos, stock, nombre, precioProducto, id_categori
     $("#fotoPreview").attr("src", fotoPath || "");
     $("#fotoEditP").val("");
     $("#exampleModal6").modal("show");
-    
+
 }
 
 $('#ActualizarFormP').on('submit', function (event) {
@@ -134,12 +133,12 @@ $('#ActualizarFormP').on('submit', function (event) {
         formData.append("foto", fileInput.files[0]);
     };
     for (var par of formData.entries()) {
-        console.log(par[0] +","+ par[1])
+        console.log(par[0] + "," + par[1])
     }
 
     $.ajax({
         type: "PUT",
-        url: `https://localhost:7003/api/Productos/${id}`,
+        url: `https://localhost:7003/api/Productos/${$('#idProductos_Editar').val()}`,
         data: formData,
         contentType: false,
         processData: false,
@@ -215,7 +214,7 @@ function agregarProductoAdmin() {
         var fileInput = $('#foto')[0];
         if (fileInput && fileInput.files && fileInput.files.length > 0) {
             formData.append("foto", fileInput.files[0]);
-        }    
+        }
 
         $.ajax({
             type: "POST",
@@ -321,15 +320,15 @@ function mostrarProductoId(id) {
                         
                     `);
 
-                
-            
-        }).fail(function () {
-            $('#contenedorProducto').html('<p class="text-danger">Error al cargar.</p>');
-        });
-},
-error: function () {
-    $('#contenedorProducto').html('<p class="text-danger">Error al cargar producto.</p>');
-}
+
+
+            }).fail(function () {
+                $('#contenedorProducto').html('<p class="text-danger">Error al cargar.</p>');
+            });
+        },
+        error: function () {
+            $('#contenedorProducto').html('<p class="text-danger">Error al cargar producto.</p>');
+        }
     });
 }
 
