@@ -311,7 +311,7 @@ function mostrarProductoId(id) {
                                 <p><strong>Producto:</strong> ${categoria.nombre}</p>
                                 <p><strong>Precio:</strong> ₡${producto.precioProducto}</p>
                                 <div class="mb-3">
-                                    <button class="btn mt-3" style="background-color: #F25835; border: none; color: white;">
+                                   <button class="btn mt-3 " style="background-color: #F25835; border: none; color: white;" onclick="obtenerProductoC(${producto.id_productos})">
                                         <i class="fa-solid fa-book-open"></i> Comprar
                                     </button>
                                 </div>
@@ -332,7 +332,49 @@ function mostrarProductoId(id) {
     });
 }
 
+function obtenerProductoC(id_productos) {
+    $.get(`https://localhost:7003/api/Productos/${id_productos}`, function (producto) {
+        var productoUnitario = {
+            id_productos: producto.id_productos,
+            stock: producto.stock,
+            nombre: producto.nombre,
+            precioProducto: producto.precioProducto,
+            id_categoria: producto.id_categoria,
+            iD_ESTADO: producto.iD_ESTADO,
+            fotoPath: producto.fotoPath,
+            cantidad: 1,
+            precio_producto_cantidad: producto.precioProducto * 1
+        }
 
+        let carritoP = JSON.parse(sessionStorage.getItem('carritoProducto') || '[]');
+
+        const indexPExiste = carritoP.findIndex(c =>
+            c.id_productos == productoUnitario.id_productos
+        );
+
+        if (indexPExiste !== -1) {
+            if (carritoP[indexPExiste].cantidad < productoUnitario.stock) {
+                carritoP[indexPExiste].cantidad += 1;
+                carritoP[indexPExiste].precio_producto_cantidad =
+                    carritoP[indexPExiste].precioProducto * carritoP[indexPExiste].cantidad;
+            } else {
+                toastr.error('No hay suficiente stock');
+                return;
+            }
+        } else {
+            carritoP.push(productoUnitario);
+        }
+
+        // Guardamos en carritoProducto, no en carritoLibros
+        sessionStorage.setItem('carritoProducto', JSON.stringify(carritoP));
+
+        toastr.success('¡Éxito al agregar al carrito!');
+        // Si lo deseas, refrescas la vista del offcanvas
+        cargarCarrito();
+    }).fail(function () {
+        toastr.error('No se pudo agregar al carrito');
+    });
+}
 
 //------------
 function CategoriaSelect() {

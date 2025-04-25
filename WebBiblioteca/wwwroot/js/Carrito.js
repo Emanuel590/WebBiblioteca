@@ -35,56 +35,69 @@ function cargarCarrito() {
 
             const body = $('#offcanvasRight .offcanvas-body').empty();
 
+            const librosArr = JSON.parse(sessionStorage.getItem('carritoLibros') || '[]');
+            const productosArr = JSON.parse(sessionStorage.getItem('carritoProducto') || '[]');
+            const carrito = [
+                ...librosArr.map(l => ({ ...l, type: 'libro' })),
+                ...productosArr.map(p => ({ ...p, type: 'producto' }))
+            ];
 
-            const carrito = JSON.parse(sessionStorage.getItem("carritoLibros") || '[]');
+            if (carrito.length === 0) {
+                body.append(`<p class="text-center">No hay artículos en el carrito</p>`);
+                return;
+            }
 
-
-            $.each(carrito, function (_, libro) {
-
-                const itemHtml = `
+            carrito.forEach(item => {
+                let html;
+                if (item.type === 'libro') {
+                    html = `
   <div class="d-flex align-items-center mb-3 border-bottom pb-2">
-    <img
-      src="${libro.foto}" 
-      alt="${libro.titulo}" 
-      style="width:50px; height:50px; object-fit:cover;" 
-      class="me-3" 
-    />
+    <img src="${item.foto}" alt="${item.titulo}"
+         style="width:50px; height:50px; object-fit:cover;"
+         class="me-3"/>
     <div class="flex-grow-1">
-      <h6 class="m-0">${libro.titulo}</h6>
-      <p class="m-0 text-muted">₡${libro.precio_alquiler}</p>
-      <p class="m-0 text-muted">Cantidad: ${libro.cantidad}</p>
-      <p class="m-0">Precio por cantidad: ₡${libro.precio_Producto_cantidad}</p>
+      <h6 class="m-0">${item.titulo}</h6>
+      <p class="m-0 text-muted">₡${item.precio_alquiler}</p>
+      <p class="m-0 text-muted">Cantidad: ${item.cantidad}</p>
+      <p class="m-0">Total: ₡${item.precio_Producto_cantidad}</p>
     </div>
-    <div>
-      <button 
-        class="btn btn-sm btn-danger" 
-        onclick="eliminarLibro(${libro.id_libro})"
-      >
-        <i class="fa-solid fa-trash"></i>
-      </button>
+    <button class="btn btn-sm btn-danger"
+            onclick="eliminarItem('libro', ${item.id_libro})">
+      <i class="fa-solid fa-trash"></i>
+    </button>
+  </div>`;
+                } else { // producto
+                    html = `
+  <div class="d-flex align-items-center mb-3 border-bottom pb-2">
+    <img src="${item.fotoPath}" alt="${item.nombre}"
+         style="width:50px; height:50px; object-fit:cover;"
+         class="me-3"/>
+    <div class="flex-grow-1">
+      <h6 class="m-0">${item.nombre}</h6>
+      <p class="m-0 text-muted">₡${item.precioProducto}</p>
+      <p class="m-0 text-muted">Cantidad: ${item.cantidad}</p>
+      <p class="m-0">Total: ₡${item.precio_producto_cantidad}</p>
     </div>
-  </div>
-        `;
-                body.append(itemHtml);
+    <button class="btn btn-sm btn-danger"
+            onclick="eliminarItem('producto', ${item.id_productos})">
+      <i class="fa-solid fa-trash"></i>
+    </button>
+  </div>`;
+                }
+                body.append(html);
             });
 
-            if (carrito.length > 0) {
-                body.append(`
-                <div class="d-flex justify-content-between">
-                <button class="btn btn-sm btn-danger" onclick="eliminarTodosLibros()"><i class="fa-solid fa-trash"></i> Eliminar articulos</button>
-                <button class="btn btn-sm btn-success" onclick="agregarArticulos()"><i class="fa-solid fa-book"></i> Comprar articulos</button>
-                </div>
-                `)
-            }
-
-            if (carrito.length == 0) {
-                body.append(`<p class="text-center">No hay articulos en el carrito</p>`)
-            }
-
-           
+            body.append(`
+  <div class="d-flex justify-content-between mt-3">
+    <button class="btn btn-sm btn-danger" onclick="eliminarTodos()">
+      <i class="fa-solid fa-trash"></i> Vaciar carrito
+    </button>
+    <button class="btn btn-sm btn-success" onclick="finalizarCompra()">
+      <i class="fa-solid fa-book"></i> Comprar artículos
+    </button>
+  </div>
+  `);
         },
-
-        
         error: function (xhr) {
             if (xhr.status === 401 || xhr.status === 403) {
                 Swal.fire({
@@ -99,17 +112,26 @@ function cargarCarrito() {
     });
 }
 
-
-function eliminarLibro(id) {
-    const idParseada = parseInt(id);
-
-    let carrito = JSON.parse(sessionStorage.getItem("carritoLibros") || '[]');
-    let carritomodificado = carrito.filter(c => parseInt(c.id_libro) !== idParseada);
-    sessionStorage.setItem('carritoLibros', JSON.stringify(carritomodificado));
+function eliminarItem(type, id) {
+    if (type === 'libro') {
+        let librosArr = JSON.parse(sessionStorage.getItem('carritoLibros') || '[]');
+        librosArr = librosArr.filter(l => l.id_libro !== id);
+        sessionStorage.setItem('carritoLibros', JSON.stringify(librosArr));
+    } else {
+        let prodArr = JSON.parse(sessionStorage.getItem('carritoProducto') || '[]');
+        prodArr = prodArr.filter(p => p.id_productos !== id);
+        sessionStorage.setItem('carritoProducto', JSON.stringify(prodArr));
+    }
     cargarCarrito();
 }
 
-function eliminarTodosLibros() {
-    sessionStorage.removeItem("carritoLibros");
+function eliminarTodos() {
+    sessionStorage.removeItem('carritoLibros');
+    sessionStorage.removeItem('carritoProducto');
     cargarCarrito();
+}
+
+function finalizarCompra() {
+    Swal.fire('¡Compra realizada!', '', 'success');
+    eliminarTodos();
 }
