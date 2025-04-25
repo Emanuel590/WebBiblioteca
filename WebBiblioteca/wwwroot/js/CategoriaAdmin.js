@@ -1,212 +1,107 @@
-﻿//Mostrar los Metodos en el DOM
-$(document).ready(function () {
-    cargarCategoriaTabla();
-    agregarCategoria();
+﻿
+let tablaCategoria;
+
+$(function () {
+    tablaCategoria = $('#tablaCategoria').DataTable({
+        ajax: { url: 'https://localhost:7003/api/Categorias', dataSrc: '' },
+        language: { url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/es-ES.json' },
+        columns: [
+            { data: 'id_Categoria' },
+            { data: 'nombre' },
+            {
+                data: 'id_Estado',
+                render: est => est == 1
+                    ? '<span class="text-success">Activo</span>'
+                    : '<span class="text-danger">Inactivo</span>'
+            },
+            {
+                data: null,
+                render: row => {
+                    const btnEstado = row.id_Estado == 1
+                        ? `<button class="btn btn-danger rounded px-2 py-1" onclick="actualizarEstadoCategoriaId(${row.id_Categoria}, '${row.nombre}', 2)">Inactivar</button>`
+                        : `<button class="btn btn-success rounded px-2 py-1" onclick="actualizarEstadoCategoriaId(${row.id_Categoria}, '${row.nombre}', 1)">Activar</button>`;
+                    const btnEditar = `<button class="btn btn-primary rounded px-2 py-1" data-bs-toggle="modal" data-bs-target="#exampleModal1" onclick="editarCategoria(${row.id_Categoria}, '${row.nombre}', ${row.id_Estado})">Editar</button>`;
+                    return btnEstado + ' ' + btnEditar;
+                }
+            },
+            {
+                data: null,
+                render: row => `<button class="btn btn-danger rounded px-2 py-1" onclick="eliminarCategoriaId(${row.id_Categoria})">Eliminar</button>`
+            }
+        ],
+        columnDefs: [
+            { targets: [3, 4], orderable: false, searchable: false }
+        ]
+    });
+
+    $('#formAgregarCategoria').on('submit', function (e) {
+        e.preventDefault();
+        const nombre = $('#categoriaNueva').val().trim();
+        if (!nombre) return;
+        $.ajax({
+            type: 'POST',
+            url: 'https://localhost:7003/api/Categorias',
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify({ nombre }),
+            success: function () {
+                $('#exampleModal').modal('hide');
+                tablaCategoria.ajax.reload();
+            }
+        });
+    });
+
+    $('#formActualizarCategoria').on('submit', function (e) {
+        e.preventDefault();
+        const id = $('#idEditar').val();
+        const nombre = $('#categoriaEditar').val().trim();
+        const estado = $('#estadoEditar').val();
+        $.ajax({
+            type: 'PUT',
+            url: `https://localhost:7003/api/Categorias/${id}`,
+            contentType: 'application/json; charset=utf-8',
+            data: JSON.stringify({ id_Categoria: id, nombre, id_Estado: estado }),
+            success: function () {
+                $('#exampleModal1').modal('hide');
+                tablaCategoria.ajax.reload();
+            }
+        });
+    });
 });
 
-
-
-//Metodo para cambiar el Estado de Categoria
-function actualizarEstadoCategoriaId(id, categoria, nuevoEstado) {
-    var datos = { id_Categoria: id, nombre: categoria, id_Estado: nuevoEstado };
+function actualizarEstadoCategoriaId(id, nombre, nuevoEstado) {
     $.ajax({
-        type: "PUT",
+        type: 'PUT',
         url: `https://localhost:7003/api/Categorias/${id}`,
-        data: JSON.stringify(datos),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: function (datos) {
-            cargarCategoriaTabla();
-        },
-        error: function (xhr, status, error) {
-            console.log("ERROR:", error, xhr, status);
-        }
+        contentType: 'application/json; charset=utf-8',
+        data: JSON.stringify({ id_Categoria: id, nombre, id_Estado: nuevoEstado }),
+        success: () => tablaCategoria.ajax.reload()
     });
 }
 
-
-//Metodo para eliminar un Categoria para siempre
 function eliminarCategoriaId(id) {
-    idParseada = parseInt(id)
     Swal.fire({
-        title: "¿Estás seguro que deseas eliminar esta Categoria?",
-        html: "Si lo haces no podrás recuperar la información.",
+        title: '¿Estás seguro que deseas eliminar esta Categoría?',
+        html: 'Si lo haces no podrás recuperar la información.',
         showDenyButton: true,
-        confirmButtonText: "SI",
-        denyButtonText: "CANCELAR"
-    }).then((result) => {
+        confirmButtonText: 'SI',
+        denyButtonText: 'CANCELAR'
+    }).then(result => {
         if (result.isConfirmed) {
             $.ajax({
-                type: "DELETE",
-                url: `https://localhost:7003/api/Categorias/${idParseada}`,
-                success: function (response) {
-                    Swal.fire("Eliminado", "La Categoria ha sido eliminado.", "success");
-                    cargarCategoriaTabla();
-                   
+                type: 'DELETE',
+                url: `https://localhost:7003/api/Categorias/${id}`,
+                success: () => {
+                    tablaCategoria.ajax.reload();
+                    Swal.fire('Eliminado', 'La Categoría ha sido eliminada.', 'success');
                 },
-                error: function (xhr, status, error) {
-                    console.log("ERROR:", error, xhr.status, xhr.responseText);
-                    Swal.fire("Error", "No se pudo eliminar la categoria. Lo mas probable tengas una categoria asociado a otra entidad", "error");
-                }
+                error: () => Swal.fire('Error', 'No se pudo eliminar la categoría.', 'error')
             });
-        } else if (result.isDenied) {
-            Swal.fire("Cancelado", "No se eliminó la categoria.", "info");
         }
     });
 }
 
-
-
-
-
-
-//Metodo para mostrar los Categoria en las tablas
-function cargarCategoriaTabla() {
-    $.ajax({
-        type: "GET",
-        url: "https://localhost:7003/api/Categorias",
-        dataType: "json",
-        success: function (response) {
-            const tabla = $('#tablaCategoria tbody');
-            tabla.empty();
-            $.each(response, function (_, categoria) {
-                const row = `
-                    <tr>
-                        <td>${categoria.id_Categoria}</td>
-                        <td>${categoria.nombre}</td>
-                        <td>${categoria.id_Estado == 1 ?
-                        `<span class="text-success">Activo</span>` :
-                        `<span class="text-danger">Inactivo</span>`
-                    }</td>
-                        <td>
-                            ${categoria.id_Estado == 1 ?
-                    `<button class="btn btn-danger rounded px-2 py-1" onclick="actualizarEstadoCategoriaId(${categoria.id_Categoria}, '${categoria.nombre}', 2)">
-                                    <i class="fa-solid fa-eye-slash"></i> Inactivar
-                                </button>` :
-                    `<button class="btn btn-success rounded px-2 py-1" onclick="actualizarEstadoCategoriaId(${categoria.id_Categoria}, '${categoria.nombre}', 1)">
-                                    <i class="fa-solid fa-eye"></i> Activar
-                                </button>` }
-                                <button  data-bs-toggle="modal" data-bs-target="#exampleModal1" onclick="editarCategoria(${categoria.id_Categoria}, '${categoria.nombre}', ${categoria.id_Estado})" class="btn btn-primary rounded px-2 py-1">
-                                  Editar
-                                </button >
-                        </td>
-                        <td>
-                                <button onclick="eliminarCategoriaId(${categoria.id_Categoria})" class="btn btn-danger rounded px-2 py-1">
-                                    <i class="fa-solid fa-trash"></i> Eliminar
-                                </button >
-                        </td>
-                    </tr>
-                `;
-                tabla.append(row);
-            });
-        },
-        error: function (xhr, status, error) {
-            console.log("ERROR:", error, xhr, status);
-        }
-    });
-}
-
-
-// function cargarCategoriaNavbar() {
-//     $.ajax({
-//         type: "GET",
-//         url: "https://localhost:7003/api/Categorias",
-//         dataType: "json",
-//         success: function (response) {
-//             const rowFiltered = response.filter(g => g.id_Estado == 1);
-//             const ul = $('#ulCategorias')
-//             ul.empty();
-//             $.each(rowFiltered, function (_, categoria) {
-//                 const row = `
-
-//                      <li class="item-dropdown"><a class="dropdown-item" href="/CategoriaAdmin/${categoria.id_Categoria}">${categoria.nombre}</a></li>
-
-//                 `
-//                 ul.append(row);
-//             })
-
-//         },
-//         error: function (xhr, status, error) {
-//             console.log("ERROR: ", error, xhr, status)
-//         }
-
-//     });
-// }
-
-
-//Metodo para obtener los datos de la tabla y setearlos en los valores del form Actualizar
 function editarCategoria(id, nombre, estado) {
-
-    $('#id_Editar').val(id);
-    $('#categoria_Editar').val(nombre);
-    $('#estado_Editar').val(estado);
-
-
-    $('#exampleModal1').modal('show');
+    $('#idEditar').val(id);
+    $('#categoriaEditar').val(nombre);
+    $('#estadoEditar').val(estado);
 }
-
-
-//Metodo para ActualizarForm
-$('#ActualizarForm').on('submit', function (event) {
-    event.preventDefault();
-
-    var datos = {
-        id_Categoria: $('#id_Editar').val(),
-        nombre: $('#categoria_Editar').val(),
-        id_Estado: $('#estado_Editar').val()
-    };
-
-
-    $.ajax({
-        type: "PUT",
-        url: `https://localhost:7003/api/Categorias/${datos.id_Categoria}`,
-        data: JSON.stringify(datos),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json",
-        success: function (datos) {
-
-            cargarCategoriaTabla();
-            $('#exampleModal1').modal('hide');
-        },
-        error: function (xhr, status, error) {
-            console.log("ERROR:", error, xhr, status);
-        }
-    });
-});
-
-
-
-//Metodo para agregar una nuevo Categoria
-function agregarCategoria() {
-
-    $('#BinarioONoBinario').on('submit', function (event) {
-        event.preventDefault();
-
-        var datos = {
-            nombre: $('#categoria').val()
-        }
-
-
-        $.ajax({
-            type: "POST",
-            url: "https://localhost:7003/api/Categorias",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: JSON.stringify(datos),
-            success: function (datos) {
-                $('#exampleModal').modal('hide');
-                cargarCategoriaTabla();
-            },
-            error: function (xhr, status, error) {
-                console.log("ERROR: ", error, xhr, status)
-            }
-
-        });
-
-
-
-    })
-};
-
-
-

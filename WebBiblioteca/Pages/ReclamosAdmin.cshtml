@@ -8,55 +8,51 @@
     <div class="card">
         <h1 class="card-header text-center text-white" style="background-color: #F2A172">Registro de Reclamos</h1>
         <div class="card-body">
-            <table class="table" id="tablaReclamos">
+            <table id="tablaReclamos" class="table table-striped">
                 <thead>
                     <tr class="text-center">
-                        <th scope="col">#</th>
-                        <th scope="col">Descripción</th>
-                        <th scope="col">Libro</th>
-                        <th scope="col">Usuario</th>
-                        <th scope="col">Estado</th>
-                        <th scope="col">Acciones</th>
-                        <th scope="col">Acciones Admin</th>
+                        <th>#</th>
+                        <th>Descripción</th>
+                        <th>Libro</th>
+                        <th>Usuario</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                        <th>Acciones Admin</th>
                     </tr>
                 </thead>
-                <tbody class="text-center">
-                    <tr></tr>
-                </tbody>
+                <tbody></tbody>
             </table>
         </div>
     </div>
 </div>
 
 <div class="text-center">
-    <a type="button" class="btn rounded-0" style="background-color: #F25835; border: none;" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    <a class="btn rounded-0" style="background-color: #F25835; border: none;" data-bs-toggle="modal" data-bs-target="#exampleModal">
         <h6 class="text-white fw-bold"><i class="fa-solid fa-comment-dots px-1"></i>Agregar Reclamo</h6>
     </a>
 </div>
 
-
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- Modal Agregar -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="text-center">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Agregar Reclamo</h1>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h1 class="modal-title fs-5">Agregar Reclamo</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form method="POST" id="ReclamosAgregar">
+                <form id="ReclamosAgregar">
                     <div class="mb-3">
                         <label for="descripcionReclamo" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="descripcionReclamo" placeholder="Ingrese la descripción del reclamo"></textarea>
+                        <textarea class="form-control" id="descripcionReclamo"></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="librosOption" class="form-label">Libro</label>
-                        <select class="form-select" id="librosOption" aria-label="Default select example"></select>
+                        <select class="form-select" id="librosOption"></select>
                     </div>
                     <div class="mb-3">
                         <label for="usuariosOption" class="form-label">Usuario</label>
-                        <select class="form-select" id="usuariosOption" aria-label="Default select example"></select>
+                        <select class="form-select" id="usuariosOption"></select>
                     </div>
                     <div class="text-center">
                         <button type="submit" class="btn border-0" style="background-color: #F25835;">
@@ -69,32 +65,30 @@
     </div>
 </div>
 
-
-<div class="modal fade" id="exampleModal3" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+<!-- Modal Editar -->
+<div class="modal fade" id="exampleModal3" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <div class="text-center">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Actualizar Reclamo</h1>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h1 class="modal-title fs-5">Actualizar Reclamo</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <form method="POST" id="ReclamosActualizar">
-                    <input type="hidden" class="form-control" id="idEdit">
+                <form id="ReclamosActualizar">
+                    <input type="hidden" id="idEdit">
                     <div class="mb-3">
                         <label for="descripcionEdit" class="form-label">Descripción</label>
-                        <textarea class="form-control" id="descripcionEdit" placeholder="Ingrese la descripción del reclamo"></textarea>
+                        <textarea class="form-control" id="descripcionEdit"></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="librosOptionEdit" class="form-label">Libro</label>
-                        <select class="form-select" id="librosOptionEdit" aria-label="Default select example"></select>
+                        <select class="form-select" id="librosOptionEdit"></select>
                     </div>
                     <div class="mb-3">
                         <label for="usuariosOptionEdit" class="form-label">Usuario</label>
-                        <select class="form-select" id="usuariosOptionEdit" aria-label="Default select example"></select>
+                        <select class="form-select" id="usuariosOptionEdit"></select>
                     </div>
-                    <input type="hidden" class="form-control" id="estadoEdit">
+                    <input type="hidden" id="estadoEdit">
                     <div class="text-center">
                         <button type="submit" class="btn border-0" style="background-color: #F25835;">
                             <h5 class="text-white fw-bold"><i class="fa-solid fa-square-check px-2"></i>Actualizar</h5>
@@ -107,4 +101,6 @@
 </div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
 <script src="~/js/ReclamosAdmin.js"></script>
