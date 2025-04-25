@@ -1,0 +1,83 @@
+﻿@page
+@model WebBiblioteca.Pages.FacturacionModel
+@{
+    ViewData["Title"] = "Facturación";
+}
+@using Microsoft.AspNetCore.Http
+
+<script>
+    var authToken = '@HttpContext.Session.GetString("AuthToken")';
+</script>
+
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-page="/Index">Inicio</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Facturación</li>
+        </ol>
+    </nav>
+
+    <h3 class="mb-4">Resumen de tu carrito</h3>
+    <div id="facturaBody">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Título</th>
+                    <th>Cantidad</th>
+                    <th>Precio unit.</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody id="tablaFacturacion"></tbody>
+            <tfoot>
+                <tr>
+                    <th colspan="3" class="text-end">Total:</th>
+                    <th id="totalFacturacion">₡0</th>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div class="mb-3">
+            <label for="metodoPagoSelect" class="form-label">Método de pago</label>
+            <select id="metodoPagoSelect" class="form-select" required>
+            </select>
+        </div>
+
+        <div class="d-flex justify-content-between">
+            <button id="btnVerFactura" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#facturaModal">
+                Ver Factura
+            </button>
+            <button id="btnGenerarFactura" class="btn btn-success">Generar Factura (PDF)</button>
+            <button id="btnPagar" class="btn btn-warning">Pagar</button>
+        </div>
+
+        <div class="modal fade" id="facturaModal" tabindex="-1" aria-labelledby="facturaModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="facturaModalLabel">Vista Previa de la Factura</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="invoiceToPdf"></div> 
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-primary" id="btnDownloadFactura" style="display:none;">Descargar Factura</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="downloadLink" class="mt-4" style="display:none;">
+            <a id="linkPdf" class="btn btn-success" download="factura.pdf">
+                <i class="fa fa-download me-1"></i> Descargar Factura (PDF)
+            </a>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.9.2/html2pdf.bundle.js"></script>
+    <script src="~/js/Factura.js" asp-append-version="true"></script>
+}

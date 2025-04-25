@@ -6,7 +6,7 @@
         .fail(err => console.error("Error al obtener facturas:", err));
 
     let table;
-    table =$('#facturasTable').DataTable({
+    table = $('#facturasTable').DataTable({
         ajax: {
             url: "https://localhost:7003/api/facturas/admin/facturas",
             dataSrc: ""
@@ -15,23 +15,35 @@
             { data: "id_factura", title: "ID" },
             { data: "fecha_factura", title: "Fecha" },
             { data: "total", title: "Total" },
-            { data: "usuario", title: "Usuario" },        
-            { data: "producto", title: "Producto" },       
-            { data: "metodO_PAGO", title: "Método de Pago" }, 
-            { data: "estado", title: "Estado" },         
-            { data: "reserva", title: "Reserva" },       
+            { data: "usuario", title: "Usuario" },
+            { data: "producto", title: "Producto" },
+            {
+                data: "metodO_PAGO",  
+                title: "Método de Pago",
+                render: function (data, type, row) {
+                    if (row.metodO_PAGO && row.metodO_PAGO.toString().length === 16) {
+                        const numero = row.metodO_PAGO.toString();
+                        const ultimos4 = numero.slice(-4); 
+                        return `**** **** **** ${ultimos4}`; 
+                    } else {
+                        return "Método de pago no disponible";
+                    }
+                }
+            },
+            { data: "estado", title: "Estado" },
+            { data: "reserva", title: "Reserva" },
             {
                 data: null,
                 title: "Acciones",
                 orderable: false,
                 render: (_, __, row) => `
-                    <button class="btn btn-warning btn-sm me-2" onclick="editarFactura(${row.id_factura})">
-                        <i class="fas fa-edit me-1"></i> Editar
-                    </button>
-                    <button class="btn btn-danger btn-sm" onclick="eliminarFactura(${row.id_factura})">
-                        <i class="fas fa-trash-alt me-1"></i> Eliminar
-                    </button>
-      `
+                <button class="btn btn-warning btn-sm me-2" onclick="editarFactura(${row.id_factura})">
+                    <i class="fas fa-edit me-1"></i> Editar
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="eliminarFactura(${row.id_factura})">
+                    <i class="fas fa-trash-alt me-1"></i> Eliminar
+                </button>
+            `
             }
         ]
     });
@@ -141,6 +153,7 @@
 
  
     function llenarSelectUsuarios(data) {
+        console.log("Usuarios recibidos:", data);
         $('#addUsuario, #editUsuario').empty();
         data.forEach(u => $('#addUsuario, #editUsuario')
             .append(`<option value="${u.id_usuario}">${u.nombre}</option>`));
@@ -151,9 +164,15 @@
             .append(`<option value="${p.id_productos}">${p.nombre}</option>`));
     }
     function llenarSelectMetodosPago(data) {
+        console.log("pagos recibidos:", data);
         $('#addMetodoPago, #editMetodoPago').empty();
-        data.forEach(m => $('#addMetodoPago, #editMetodoPago')
-            .append(`<option value="${m.id_metodo}">${m.metodo_Pago}</option>`));
+        data.forEach(m => {
+            const numero = m.n_Tarjeta.toString();
+            const ultimos4 = numero.slice(-4);
+            const texto = `${m.metodo_Pago} - ${m.entidad_Bancaria} - **** **** **** ${ultimos4}`;
+            $('#addMetodoPago, #editMetodoPago')
+                .append(`<option value="${m.id_metodo}">${texto}</option>`);
+        });
     }
     function llenarSelectEstados(data) {
         $('#addEstado, #editEstado').empty();

@@ -312,8 +312,6 @@ function mostrarListaUsuariosEmpleado(listaUsuarios, emailUsuario) {
     });
 }
 
-
-
 function mostrarPerfilCliente(cliente) {
     var html = `
         <div class="container">
@@ -368,36 +366,71 @@ function mostrarPerfilCliente(cliente) {
 
 function cargarTarjetasCliente() {
     var authToken = sessionStorage.getItem('AuthToken');
-    $.ajax({
-        url: 'https://localhost:7003/api/pagos',
-        type: 'GET',
-        headers: { 'Authorization': 'Bearer ' + authToken },
-        success: function (cards) {
-            console.log('Respuesta API /api/pagos:', cards);
+    var emailUsuario = sessionStorage.getItem('EmailUsuario'); 
+
+    console.log("Token enviado:", authToken);
+    console.log("Email del usuario en sesión:", emailUsuario);
+
+    $.when(
+        $.ajax({
+            url: 'https://localhost:7003/api/pagos',
+            type: 'GET',
+            headers: { 'Authorization': 'Bearer ' + authToken },
+        }),
+        $.ajax({
+            url: 'https://localhost:7003/api/usuarios',
+            type: 'GET',
+            headers: { 'Authorization': 'Bearer ' + authToken },
+        })
+    ).done(function (cardsResponse, usuariosResponse) {
+        var cards = cardsResponse[0];
+        var usuarios = usuariosResponse[0];
+
+        console.log('Respuesta API /api/pagos:', cards);
+        console.log('Respuesta API /api/usuarios:', usuarios);
+
+        var usuarioActual = usuarios.find(u => u.email.toLowerCase() === emailUsuario.toLowerCase());
+
+        if (usuarioActual) {
+            var idUsuario = usuarioActual.id_usuario;
+            console.log("ID de usuario actual:", idUsuario);
+
+            
+            var tarjetasDelUsuario = cards; 
+
+            console.log("Tarjetas cargadas:", tarjetasDelUsuario);
+
             var grid = '';
-            cards.forEach(function (c) {
-                grid += `
-                  <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
-                    <div class="card tarjeta-card h-100">
-                      <div class="card-body d-flex flex-column">
-                        <p class="tarjeta-number mb-2">${c.n_Tarjeta}</p>
-                        <p class="tarjeta-bank text-muted mb-4">${c.entidad_Bancaria}</p>
-                        <div class="mt-auto text-end">
-                          <button class="btn btn-sm btn-danger" onclick="confirmarEliminarTarjeta(${c.id_metodo})">
-                            <i class="fa fa-trash"></i>
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>`;
-            });
+            if (tarjetasDelUsuario.length > 0) {
+                tarjetasDelUsuario.forEach(function (c) {
+                    grid += `
+                        <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-3">
+                            <div class="card tarjeta-card h-100">
+                                <div class="card-body d-flex flex-column">
+                                    <p class="tarjeta-number mb-2">${c.n_Tarjeta}</p>
+                                    <p class="tarjeta-bank text-muted mb-4">${c.entidad_Bancaria}</p>
+                                    <div class="mt-auto text-end">
+                                        <button class="btn btn-sm btn-danger" onclick="confirmarEliminarTarjeta(${c.id_metodo})">
+                                            <i class="fa fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>`;
+                });
+            } else {
+                grid = '<p>No tienes tarjetas registradas.</p>';
+            }
+
             $('#rowTarjetas').html(grid);
-        },
-        error: function (xhr) {
-            alert('Error al cargar tarjetas: ' + xhr.responseText);
+        } else {
+            $('#rowTarjetas').html('<p class="text-danger">Usuario no encontrado.</p>');
         }
+    }).fail(function (xhr, status, error) {
+        alert('Error en la carga de datos: ' + xhr.responseText);
     });
 }
+
 
 
 function mostrarFormCrearTarjeta() {
@@ -418,7 +451,7 @@ function editarTarjeta(id) {
             $('#id_metodo').val(data.id_metodo);
             $('#metodoPago').val(data.metodo_Pago);
             $('#entidadBancaria').val(data.entidad_Bancaria);
-            $('#nTarjeta').val(''); // no mostramos el real
+            $('#nTarjeta').val(''); 
             $('#idEstado').val(data.id_estado);
             new bootstrap.Modal($('#tarjetaModal')).show();
         },
@@ -430,32 +463,64 @@ function editarTarjeta(id) {
 
 function guardarTarjeta() {
     var authToken = sessionStorage.getItem('AuthToken');
-    var id = $('#id_metodo').val();
-    var payload = {
-        Id_metodo: id ? parseInt(id) : 0,
-        Metodo_Pago: $('#metodoPago').val(),
-        Entidad_Bancaria: $('#entidadBancaria').val(),
-        N_Tarjeta: $('#nTarjeta').val(),
-        ID_ESTADO: parseInt($('#idEstado').val())
-    };
-    var method = id ? 'PUT' : 'POST';
-    var url = 'https://localhost:7003/api/pagos' + (id ? '/' + id : '');
+    var emailUsuario = sessionStorage.getItem('EmailUsuario'); 
+
+    if (!emailUsuario) {
+        alert('No se ha encontrado el email del usuario. Por favor, inicie sesión.');
+        return;
+    }
 
     $.ajax({
-        url: url,
-        type: method,
-        contentType: 'application/json',
+        url: 'https://localhost:7003/api/usuarios', 
+        type: 'GET',
         headers: { 'Authorization': 'Bearer ' + authToken },
-        data: JSON.stringify(payload),
-        success: function () {
-            bootstrap.Modal.getInstance($('#tarjetaModal')).hide();
-            cargarTarjetasCliente();
+        success: function (response) {
+            var usuario = response.find(u => u.email === emailUsuario);
+
+            if (!usuario) {
+                alert('No se encontró información del usuario.');
+                return;
+            }
+
+            var idUsuario = usuario.id_usuario; 
+
+          
+            var id = $('#id_metodo').val();
+            var payload = {
+                Id_metodo: id ? parseInt(id) : 0,
+                Metodo_Pago: $('#metodoPago').val(),
+                Entidad_Bancaria: $('#entidadBancaria').val(),
+                N_Tarjeta: $('#nTarjeta').val(),
+                ID_ESTADO: parseInt($('#idEstado').val()),
+                Id_usuario: idUsuario 
+            };
+
+            var method = id ? 'PUT' : 'POST';
+            var url = 'https://localhost:7003/api/pagos' + (id ? '/' + id : '');
+
+            $.ajax({
+                url: url,
+                type: method,
+                contentType: 'application/json',
+                headers: { 'Authorization': 'Bearer ' + authToken },
+                data: JSON.stringify(payload),
+                success: function () {
+                    bootstrap.Modal.getInstance($('#tarjetaModal')).hide();
+                    cargarTarjetasCliente(); 
+                },
+                error: function (xhr) {
+                    alert('Error al guardar tarjeta: ' + xhr.responseText);
+                }
+            });
         },
         error: function (xhr) {
-            alert('Error al guardar tarjeta: ' + xhr.responseText);
+            alert('Error al obtener usuario: ' + xhr.responseText);
         }
     });
 }
+
+
+
 
 function confirmarEliminarTarjeta(id) {
     if (confirm('¿Eliminar definitivamente esta tarjeta?')) {

@@ -113,3 +113,8 @@ function eliminarTodosLibros() {
     sessionStorage.removeItem("carritoLibros");
     cargarCarrito();
 }
+
+function agregarArticulos() {
+    window.location.href = '/Facturacion';
+}
+              
