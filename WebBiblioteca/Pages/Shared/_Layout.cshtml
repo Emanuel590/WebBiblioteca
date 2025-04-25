@@ -33,6 +33,7 @@
     <link rel="stylesheet" href="~/css/nav.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-..." crossorigin="anonymous" referrerpolicy="no-referrer" />
 
 
 </head>
@@ -51,89 +52,111 @@
                             if (userRole == 1 || userRole == 3)
                             {
                                 <li class="nav-item nav-items px-3">
-                                    <a class="nav-link active fs-5" href="/LibrosAdmin">Libros</a>
+                                    <a class="nav-link active fs-5" href="/LibrosAdmin">
+                                        <i class="fa-solid fa-book me-1"></i> Libros
+                                    </a>
                                 </li>
-                            }else{
+                            }
+                            else
+                            {
                                 <li class="nav-item nav-items px-3">
-                                    <a class="nav-link active fs-5" href="/Libros">Libros</a>
+                                    <a class="nav-link active fs-5" href="/Libros">
+                                        <i class="fa-solid fa-book me-1"></i> Libros
+                                    </a>
                                 </li>
                             }
                         }
 
                         <li class="nav-item dropdown px-3">
-
                             @{
                                 if (userRole == 1 || userRole == 3)
                                 {
-                                    <a class="nav-link active nav-items fs-5" href="/GenerosAdmin" role="button">
-                                        Generos
+                                    <a class="nav-link active nav-items fs-5" href="/GenerosAdmin">
+                                        <i class="fa-solid fa-masks-theater me-1"></i> Géneros
                                     </a>
-                                }else{
-                                    <a class="nav-link active nav-items fs-5" href="" role="button">
-                                        Generos
+                                }
+                                else
+                                {
+                                    <a class="nav-link active nav-items fs-5" href="#">
+                                        <i class="fa-solid fa-masks-theater me-1"></i> Géneros
                                     </a>
                                 }
                             }
-
-
-                            <ul class="dropdown-menu"  id="ulGeneros">
-
-                            </ul>
+                            <ul class="dropdown-menu" id="ulGeneros"></ul>
                         </li>
+
                         @{
                             if (userRole == 1 || userRole == 3)
                             {
                                 <li class="nav-item px-3">
-                                    <a class="nav-link active nav-items fs-5" href="/AutoresAdmin">Autores</a>
+                                    <a class="nav-link active nav-items fs-5" href="/AutoresAdmin">
+                                        <i class="fa-solid fa-pen-nib me-1"></i> Autores
+                                    </a>
                                 </li>
                                 <li class="nav-item px-3">
-                                    <a class="nav-link active nav-items fs-5" href="/CategoriaAdmin">Categoria</a>
+                                    <a class="nav-link active nav-items fs-5" href="/CategoriaAdmin">
+                                        <i class="fa-solid fa-folder me-1"></i> Categoría
+                                    </a>
                                 </li>
                                 <li class="nav-item px-3">
-                                    <a class="nav-link active nav-items fs-5" href="/ReclamosAdmin">Reclamos</a>
+                                    <a class="nav-link active nav-items fs-5" href="/ReclamosAdmin">
+                                        <i class="fa-solid fa-triangle-exclamation me-1"></i> Reclamos
+                                    </a>
                                 </li>
                                 <li class="nav-item px-3">
-                                    <a class="nav-link active nav-items fs-5" href="/resena">Reseñas</a>
+                                    <a class="nav-link active nav-items fs-5" href="/resena">
+                                        <i class="fa-solid fa-comment-dots me-1"></i> Reseñas
+                                    </a>
                                 </li>
                                 <li class="nav-item px-3">
-                                    <a class="nav-link active nav-items fs-5" href="/ReservasAdmin">Reservas</a>
+                                    <a class="nav-link active nav-items fs-5" href="/ReservasAdmin">
+                                        <i class="fa-solid fa-calendar-check me-1"></i> Reservas
+                                    </a>
                                 </li>
                             }
                         }
 
                         <li class="nav-item px-3">
-                            <a class="nav-link active nav-items fs-5" href="/ProductosMostrar">Productos</a>
+                            <a class="nav-link active nav-items fs-5" href="/ProductosMostrar">
+                                <i class="fa-solid fa-box me-1"></i> Productos
+                            </a>
                         </li>
+
                         @{
                             if (userRole == 1 || userRole == 3)
                             {
                                 <li class="nav-item px-3">
-                                    <a class="nav-link active nav-items fs-5" href="/CategoriaAdmin">Categorias</a>
+                                    <a class="nav-link active nav-items fs-5" href="/CategoriaAdmin">
+                                        <i class="fa-solid fa-folder me-1"></i> Categorías
+                                    </a>
                                 </li>
                             }
                         }
-
                     </ul>
+
 
                     <div>
 
-                        
 
                         @if (authToken != null)
                         {
-                            <a href="/PerfilUsuario"  class="text-decoration-none ">
-                                <i class="fa-solid fa-user text-white px-3 fs-5"></i>
-                            </a>
+                            <div class="d-flex align-items-center">
+                                <a href="/PerfilUsuario" class="text-decoration-none text-white fs-5 px-3 nav-items d-flex align-items-center">
+                                    <i class="fa-solid fa-user me-1"></i> Perfil
+                                </a>
 
-                            <form method="post" asp-page="/Logout" asp-page-handler="OnPost" style="display:inline;">
-                                <button type="submit" class="btn btn-link text-white fs-5 text-decoration-none nav-items">Logout</button>
-                            </form>
-
-                           
+                                <form method="post" asp-page="/Logout" asp-page-handler="OnPost" class="m-0">
+                                    <button type="submit" class="btn btn-link text-white fs-5 text-decoration-none nav-items d-flex align-items-center px-3">
+                                        <i class="fa-solid fa-sign-out-alt me-1"></i> Logout
+                                    </button>
+                                </form>
+                            </div>
                         }
                         else
                         {
-                            <a href="/Login" class="text-white fs-5 px-3 text-decoration-none nav-items">Login</a>
+                            <a href="/Login" class="text-white fs-5 px-3 text-decoration-none nav-items d-flex align-items-center">
+                                <i class="fa-solid fa-sign-in-alt me-1"></i> Login
+                            </a>
                         }
 
 
