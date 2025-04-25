@@ -262,6 +262,7 @@ $("#LibrosActualizar").on("submit", function (event) {
     }
 
 
+
     $.ajax({
         type: "PUT",
         url: `https://localhost:7003/api/Libros/${$("#idEdit").val()}`,
@@ -269,9 +270,9 @@ $("#LibrosActualizar").on("submit", function (event) {
         contentType: false,
         processData: false,
         success: function (response) {
-            // Recargar la tabla de libros
+            
             tablaLibros.ajax.reload();
-            // Ocultar el modal
+            
             $("#exampleModal3").modal("hide");
         },
         error: function (xhr, status, error) {
@@ -360,7 +361,7 @@ function mostrarLibro(id) {
                                 <p><strong>Género:</strong> ${genero.nombre}</p>
                                 <p><strong>Precio de alquiler:</strong> ₡${libro.precio_alquiler}</p>
                                 <div class="mb-3">
-                                    <button class="btn mt-3" style="background-color: #F25835; border: none; color: white;">
+                                    <button class="btn mt-3 " style="background-color: #F25835; border: none; color: white;" onclick="obtenerLibro(${libro.id_libro})">
                                         <i class="fa-solid fa-book-open"></i> Comprar
                                     </button>
                                 </div>
@@ -383,6 +384,60 @@ function mostrarLibro(id) {
             $('#contenedorLibro').html('<p class="text-danger">Error al cargar el libro.</p>');
         }
     });
+}
+
+function obtenerLibro(id) {
+    $.get(`https://localhost:7003/api/Libros/${id}`, function (libro) {
+
+
+        var libroUnitario = {
+            id_libro: libro.id_libro,
+            foto: libro.fotoPath,
+            titulo: libro.titulo,
+            precio_alquiler: libro.precio_alquiler,
+            stock: libro.stock,
+            id_Autor: libro.id_Autor,
+            id_Genero: libro.id_Genero,
+            cantidad: 1,
+            precio_Producto_cantidad: libro.precio_alquiler * 1
+        }
+
+
+        
+
+
+
+        let carrito = JSON.parse(sessionStorage.getItem('carritoLibros') || '[]')
+
+        const indexExistente = carrito.findIndex(c =>
+            c.id_libro == libroUnitario.id_libro
+        )
+
+        if (indexExistente !== -1) {
+            if (carrito[indexExistente].cantidad < libroUnitario.stock) {
+                carrito[indexExistente].cantidad += 1;
+                carrito[indexExistente].precio_Producto_cantidad =
+                    carrito[indexExistente].precio_alquiler * carrito[indexExistente].cantidad
+            } else {
+                toastr.error('No hay suficiente stock');
+                return;
+            }
+        } else {
+            carrito.push(libroUnitario);
+        }
+
+
+        sessionStorage.setItem('carritoLibros', JSON.stringify(carrito));
+
+        toastr.success('¡Éxito al agregar al carrito!');
+
+
+    }).fail(function () {
+        toastr.error('No se pudo agregar al carrito');
+    })
+
+
+
 }
 
 
