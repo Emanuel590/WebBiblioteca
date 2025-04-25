@@ -1,0 +1,27 @@
+﻿@page "{Idproducto}"
+@model WebBiblioteca.Pages.ProductoModel
+@{
+    ViewData["Title"] = "ProductosId";
+}
+
+<div class="container my-5" id="contenedorProducto">
+
+</div>
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+@section Scripts {
+        <script src="~/js/Productos.js">
+
+        </script>
+
+        <script>
+        const productoId = @Model.IdProducto;
+        mostrarProductoId(productoId)
+        </script>
+}
+
+
+
