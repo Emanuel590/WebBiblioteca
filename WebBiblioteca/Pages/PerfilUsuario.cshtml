@@ -8,7 +8,35 @@
 <script>
     var authToken = '@HttpContext.Session.GetString("AuthToken")';
 </script>
+<style>
+   
+    .action-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex; 
+        gap: 0.5rem; 
+    }
 
+        .action-list li {
+            margin: 0;
+            padding: 0;
+        }
+
+    .btn-outline-purple {
+        background-color: white;
+        color: #795D8C;
+        border: 2px solid #795D8C;
+        transition: background-color 0.5s ease, transform 0.5s ease;
+        font-weight: 500;
+    }
+
+        .btn-outline-purple:hover {
+            background-color: #795D8C;
+            color: white;
+        }
+
+</style>
 <div id="perfilUsuario" class="text-center">
     <p class="text-muted">Cargando Perfil...</p>
 </div>
