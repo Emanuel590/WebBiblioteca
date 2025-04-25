@@ -13,10 +13,14 @@
                 <thead>
                     <tr class="text-center">
                         <th scope="col">#</th>
+                        <th scope="col">img</th>
                         <th scope="col">Stock</th>
                         <th scope="col">Nombre</th>
+                        <th scope="col">Precio</th>
                         <th scope="col">Categoria</th>
                         <th scope="col">Estado</th>
+                        <th scope="col">Accion</th>
+
                     </tr>
                 </thead>
                 <tbody class="text-center">
@@ -50,7 +54,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form method="POST" id="BinarioONoBinarioPrAdd">
+                <form method="POST" id="ProductoAgregar">
 
                     <div class="mb-3">
                         <label for="nombre" class="form-label">Nombre</label>
@@ -63,10 +67,22 @@
                     </div>
 
                     <div class="mb-3">
+                        <label for="stock" class="form-label">Precio</label>
+                        <input type="number" class="form-control" id="precioP" min="0" placeholder="Ingrese el precio">
+                    </div>
+
+                    <div class="mb-3">
                         <label for="categoria" class="form-label">Categoria</label>
                         <select class="form-select" id="categoriaP" aria-label="Default select example">
                         </select>
                    </div>
+
+                    <div class="mb-3">
+                        <label for="formFile" class="form-label">Foto</label>
+                        <input class="form-control" id="foto" type="file">
+                    </div>
+
+
 
                     <div class="text-center">
                         <button type="submit" class="btn border-0" style="background-color: #F25835; border: #ffff; outline: none !important; box-shadow: none !important;"><h5 class="text-white fw-bold"><i class="fa-solid fa-square-check  px-2"></i>Agregar</h5></button>
@@ -107,24 +123,26 @@
                         <input type="text" class="form-control" id="Nombre_Editar" placeholder="Actualice el nombre">
                     </div>
 
-
+                    <div class="mb-3">
+                        <label for="producto" class="form-label">Actualice el precio</label>
+                        <input type="text" class="form-control" id="Precio_Editar" placeholder="Actualice el nombre">
+                    </div>
 
                     <div class="mb-3">
                         <label for="producto" class="form-label">Actualizar la categoría</label>
                         <select class="form-select" id="idCategoriaP_Editar">
                         </select>
                     </div>
+             
+                    <input type="hidden" class="form-control" id="estadoEdit" placeholder="Ingrese el titulo del libro">
 
                     <div class="mb-3">
-                        <input type="hidden" class="form-control" id="estado_EditarP" >
+                        <label for="formFile" class="form-label">Foto</label>
+                        <input class="form-control" id="fotoEditP" type="file">
                     </div>
 
                     <div class="text-center">
-                        <button data-bs-toggle="modal" data-bs-target="#exampleModal6" class="btn btn-primary rounded px-2 py-1">
-                            Editar
-                        </button>
-
-
+                        <button type="submit" class="btn border-0" style="background-color: #F25835; border: #ffff; outline: none !important; box-shadow: none !important;"><h5 class="text-white fw-bold"><i class="fa-solid fa-square-check  px-2"></i>Actualizar</h5></button>
                     </div>
                 </form>
             </div>
@@ -133,6 +151,13 @@
 </div>
 
 
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+<script src="~/js/Productos.js"> </script>        
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="~/js/Productos.js"></script>
+     
+    
+ 
+}   
