@@ -55,7 +55,7 @@
             <div class="container-fluid d-flex justify-content-between">
                 <a class="navbar-brand fs-1 mx-2" href="/Index">Biblioteca</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -127,7 +127,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item px-3">
-                                    <a class="nav-link active nav-items fs-5" href="/ReservasAdmin">
+                                    <a class="nav-link active nav-items fs-5" id="reservasContainer"  href="/ReservasAdmin">
                                         <i class="fa-solid fa-calendar-check me-1"></i> Reservas
                                     </a>
                                 </li>
@@ -145,26 +145,31 @@
 
                     <div>
 
-                        
 
 
-                       
+
+
 
                         @if (authToken != null)
                         {
 
 
                             <div class="d-flex align-items-center">
-                                <button class="btn btn-sm"  data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" style="outline: none !important; box-shadow: none !important;">
+                                <button class="btn btn-sm" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight" style="outline: none !important; box-shadow: none !important;">
                                     <i class="fa-solid fa-cart-shopping px-2 text-white fs-5"></i>
                                 </button>
+
+                              
+                                <button class="btn btn-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasWithBothOptions" aria-controls="offcanvasWithBothOptions">
+                                    <i class="fa-regular fa-rectangle-list px-2 text-white fs-5"></i>
+                                    </button>
 
                                 <a href="/PerfilUsuario" class="text-decoration-none text-white fs-5 px-3 nav-items d-flex align-items-center">
                                     <i class="fa-solid fa-user me-1"></i> Perfil
                                 </a>
 
                                 <form method="post" asp-page="/Logout" asp-page-handler="OnPost" class="m-0">
-                                    <button type="submit" class="btn btn-link text-white fs-5 text-decoration-none nav-items d-flex align-items-center px-3">
+                                    <button type="submit" onclick="sessionStorage.removeItem('AuthToken');sessionStorage.removeItem('EmailUsuario'); localStorage.removeItem('AuthToken');" class="btn btn-link text-white fs-5 text-decoration-none nav-items d-flex align-items-center px-3">
                                         <i class="fa-solid fa-sign-out-alt me-1"></i> Logout
                                     </button>
                                 </form>
@@ -173,12 +178,12 @@
                         else
                         {
                             <div class="d-flex align-items-center">
-                                 <a href="/Login" class="text-white fs-5 px-3 text-decoration-none nav-items d-flex align-items-center">
+                                <a href="/Login" class="text-white fs-5 px-3 text-decoration-none nav-items d-flex align-items-center">
                                     <i class="fa-solid fa-cart-shopping px-2 text-white fs-5"></i>
                                 </a>
-                            <a href="/Login" class="text-white fs-5 px-3 text-decoration-none nav-items d-flex align-items-center">
-                                <i class="fa-solid fa-sign-in-alt me-1"></i> Login
-                            </a>
+                                <a href="/Login" class="text-white fs-5 px-3 text-decoration-none nav-items d-flex align-items-center">
+                                    <i class="fa-solid fa-sign-in-alt me-1"></i> Login
+                                </a>
                             </div>
                         }
 
@@ -213,6 +218,7 @@
     <script src="~/js/Generos.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="~/js/Carrito.js"> </script>
+    <script src="~/js/Reservas.js"> </script>
 
     <!-- Toastr CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
@@ -236,10 +242,22 @@
             <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
         </div>
         <div class="offcanvas-body">
-          
         </div>
     </div>
 
+
+    <div class="offcanvas offcanvas-start" data-bs-scroll="true" tabindex="-1" id="offcanvasWithBothOptions" aria-labelledby="offcanvasWithBothOptionsLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasWithBothOptionsLabel">
+                <i class="fa-regular fa-rectangle-list"></i> Comprar
+
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body">
+            <p>Try scrolling the rest of the page to see this option in action.</p>
+        </div>
+    </div>
 
 </body>
 </html>

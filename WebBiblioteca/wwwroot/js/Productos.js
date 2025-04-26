@@ -93,6 +93,14 @@ function cargarProductosTabla() {
       )"><i class="fa-solid fa-edit"></i> Editar </button>`;
                     return botonEstadoP + ' ' + botonEditarP;
                 }
+            },
+            {
+                data: null,
+                render: function (row) {
+                    return `<button onclick="eliminarProductosAdminId(${row.id_productos})" class="btn btn-danger rounded px-2 py-1">
+                                    <i class="fa-solid fa-trash"></i> Eliminar
+                                </button>`;
+                }
             }
         ],
         dom: 'frtip'

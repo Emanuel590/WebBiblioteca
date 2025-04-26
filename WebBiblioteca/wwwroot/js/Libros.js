@@ -363,7 +363,14 @@ function mostrarLibro(id) {
                                 <div class="mb-3">
                                     <button class="btn mt-3 " style="background-color: #F25835; border: none; color: white;" onclick="obtenerLibro(${libro.id_libro})">
                                         <i class="fa-solid fa-book-open"></i> Comprar
-                                    </button>
+                                    </button>                                                                 
+                                </div>
+
+                                <div class="mb-3">
+                                   <button class="btn mt-3 " style="background-color: #F25835; border: none; color: white;" onclick="reservasLibro(${libro.id_libro})">
+                                <i class="fa-solid fa-book-open"></i> Reservar
+                                            </button>
+                                                                 
                                 </div>
                             </div>
                         </div>
@@ -431,10 +438,54 @@ function obtenerLibro(id) {
         toastr.error('No se pudo agregar al carrito');
     })
 
-
-
 }
 
+
+function reservasLibro(id) {
+    $.get(`https://localhost:7003/api/Libros/${id}`, function (libro) {
+
+
+        var libroUnitarioR = {
+            id_libro: libro.id_libro,
+            foto: libro.fotoPath,
+            titulo: libro.titulo,
+            precio_alquiler: libro.precio_alquiler,
+            stock: libro.stock,
+            id_Autor: libro.id_Autor,
+            id_Genero: libro.id_Genero,
+            cantidad: 1,
+            precio_Producto_cantidad: libro.precio_alquiler * 1
+        }
+
+        let carritoR = JSON.parse(sessionStorage.getItem('carritoLibrosR') || '[]')
+
+        const indexExistenteR = carritoR.findIndex(c =>
+            c.id_libro == libroUnitarioR.id_libro
+        )
+
+        if (indexExistenteR !== -1) {
+            if (carritoR[indexExistenteR].cantidad < libroUnitarioR.stock) {
+                carritoR[indexExistenteR].cantidad += 1;
+                carritoR[indexExistenteR].precio_Producto_cantidad =
+                    carritoR[indexExistenteR].precio_alquiler * carrito[indexExistenteR].cantidad
+            } else {
+                toastr.error('No hay suficiente stock');
+                return;
+            }
+        } else {
+            carritoR.push(libroUnitarioR);
+        }
+
+
+        sessionStorage.setItem('carritoLibrosR', JSON.stringify(carritoR));
+
+        toastr.success('¡Éxito reservar!');
+
+
+    }).fail(function () {
+        toastr.error('No se pudo agregar al carrito');
+    })
+}
 
 function mostrarLibros() {
     $.ajax({
